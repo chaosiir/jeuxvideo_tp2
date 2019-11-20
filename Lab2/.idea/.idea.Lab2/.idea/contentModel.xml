@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\Users\pasca\.Rider2019.2\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\pasca\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_Lab2.299965701.00" t="ExcludeRecursive" />
-    <e p="F:\Laval\jeux video\Lab2" t="IncludeRecursive">
+    <e p="C:\Users\pasca\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_Lab2.343997373.00" t="ExcludeRecursive" />
+    <e p="F:\Laval\jeux video\jeuxvideo_tp2\Lab2" t="IncludeRecursive">
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Photon" t="Include">
@@ -352,6 +352,7 @@
           <e p="GameManager.cs" t="Include" />
           <e p="Hide.cs" t="Include" />
           <e p="Launcher.cs" t="Include" />
+          <e p="Lobby.cs" t="Include" />
           <e p="PlayerAnimatorManager.cs" t="Include" />
           <e p="PlayerManager.cs" t="Include" />
           <e p="PlayerNameInputField.cs" t="Include" />

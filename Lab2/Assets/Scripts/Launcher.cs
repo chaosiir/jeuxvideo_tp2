@@ -43,7 +43,6 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
             {
                 Debug.Log("We load the Lobby ");
-                Debug.LogFormat("players : "+PhotonNetwork.PlayerList);
 
                 // #Critical
                 // Load the Room Level.
