@@ -85,20 +85,20 @@ public class Lobby : MonoBehaviourPunCallbacks
                 player1.text = players[0].NickName; 
                 player2.text = players[1].NickName; 
                 player3.text = players[2].NickName;
-                player4.text = "";
+                player4.text = "Empty";
                 break; 
             case 2: 
                 player1.text = players[0].NickName; 
                 player2.text = players[1].NickName; 
-                player3.text = "";
-                player4.text = "";
+                player3.text = "Empty";
+                player4.text = "Empty";
                 break; 
             default: 
                 
                 player1.text = players[0].NickName; 
-                player2.text = "";
-                player3.text = "";
-                player4.text = "";
+                player2.text = "Empty";
+                player3.text = "Empty";
+                player4.text = "Empty";
                 break; 
         } 
     } 
