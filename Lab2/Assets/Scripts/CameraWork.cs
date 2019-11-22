@@ -14,17 +14,17 @@ namespace Com.MyCompany.MyGame
 
         [Tooltip("The distance in the local x-z plane to the target")]
         [SerializeField]
-        private float distance = 7.0f;
+        private float distance = 0.1f;
 
 
         [Tooltip("The height we want the camera to be above the target")]
         [SerializeField]
-        private float height = 3.0f;
+        private float height = 150.0f;
 
 
         [Tooltip("The Smooth time lag for the height of the camera.")]
         [SerializeField]
-        private float heightSmoothLag = 0.3f;
+        private float heightSmoothLag = 1f;
 
 
         [Tooltip("Allow the camera to be offseted vertically from the target, for example giving more view of the sceneray and less ground.")]
@@ -34,7 +34,7 @@ namespace Com.MyCompany.MyGame
 
         [Tooltip("Set this as false if a component of a prefab being instanciated by Photon Network, and manually call OnStartFollowing() when and if needed.")]
         [SerializeField]
-        private bool followOnStart = false;
+        private bool followOnStart = true;
 
 
         // cached transform of the target
@@ -170,9 +170,9 @@ namespace Com.MyCompany.MyGame
             Vector3 cameraPos = cameraTransform.position;
             Vector3 offsetToCenter = centerPos - cameraPos;
             // Generate base rotation only around y-axis
-            Quaternion yRotation = Quaternion.LookRotation( new Vector3( offsetToCenter.x, 0, offsetToCenter.z ) );
+            Quaternion yRotation = Quaternion.LookRotation( new Vector3(  offsetToCenter.x,0, offsetToCenter.z ) );
             Vector3 relativeOffset = Vector3.forward * distance + Vector3.down * height;
-            cameraTransform.rotation = yRotation * Quaternion.LookRotation( relativeOffset );
+            cameraTransform.rotation =yRotation*Quaternion.LookRotation( relativeOffset );
         }
 
 

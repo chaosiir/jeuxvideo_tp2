@@ -31,9 +31,8 @@ public class Lobby : MonoBehaviourPunCallbacks ,IPunObservable
     // Update is called once per frame 
     void Update() 
     {
-    //TODO synchro cd + habillage
-            
-            if (isStarting)
+
+        if (isStarting)
         {
             start.text = (5 - (int)Math.Floor(Time.time - tstart)).ToString();
             if (start.text.Equals("0"))
@@ -108,6 +107,7 @@ public class Lobby : MonoBehaviourPunCallbacks ,IPunObservable
         isStarting = true;
         tstart = Time.time;
         start.enabled = true;
+        
     }
 
 

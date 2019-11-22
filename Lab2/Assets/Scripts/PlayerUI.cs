@@ -23,9 +23,6 @@ namespace Com.MyCompany.MyGame
         Renderer targetRenderer;
         CanvasGroup _canvasGroup;
         Vector3 targetPosition;
-        [Tooltip("UI Slider to display Player's Health")]
-        [SerializeField]
-        private Slider playerHealthSlider;
 
 
         #endregion
@@ -68,11 +65,7 @@ namespace Com.MyCompany.MyGame
         }
         void Update()
         {
-            // Reflect the Player Health
-            if (playerHealthSlider != null)
-            {
-                playerHealthSlider.value = target.Health;
-            }
+
             if (target == null)
             {
                 Destroy(this.gameObject);

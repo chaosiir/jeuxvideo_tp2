@@ -38,6 +38,8 @@ namespace Com.MyCompany.MyGame
         [Tooltip("The prefab to use for representing the player")]
         [SerializeField]
         private GameObject playerPrefab;
+        [SerializeField]
+        private GameObject iaPrefab;
 
         #endregion
 
@@ -47,16 +49,8 @@ namespace Com.MyCompany.MyGame
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
         void Start()
-		{
-			Instance = this;
-
-			// in case we started this demo with the wrong scene being active, simply load the menu scene
-			if (!PhotonNetwork.IsConnected)
-			{
-				SceneManager.LoadScene("Launcher");
-
-				return;
-			}
+        {
+	        Instance = this;
 
 			if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
 
@@ -67,7 +61,8 @@ namespace Com.MyCompany.MyGame
 				if (PlayerManager.LocalPlayerInstance==null)
 				{
 					Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-					PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(Random.Range(-9,9),5f,Random.Range(-9,9)), Quaternion.identity, 0);
+					//todo regler prob de multi spawn + aller faire la zone de jeu en z<0 sinon etiquette nom est visible *2(intrinseque fonctionnement)
+					PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(Random.Range(-20,20),0,Random.Range(-20,20)), Quaternion.identity);
 					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
 					
 				}else{
@@ -77,15 +72,19 @@ namespace Com.MyCompany.MyGame
 
 				
 			}
+
+			if (PhotonNetwork.IsMasterClient)
+			{
+				for (int i = 0; i < 4-PhotonNetwork.PlayerList.Length; i++)
+				{
+					PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)),
+						Quaternion.identity);
+				}
+			}
 		
 		}
 
-        public void Respawn(GameObject obj)
-        {
-	        Debug.Log("res");
-	        PhotonNetwork.Destroy(obj);
-	        PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(Random.Range(-9,9),5f,Random.Range(-9,9)), Quaternion.identity, 0);
-        }
+
 		/// <summary>
 		/// MonoBehaviour method called on GameObject by Unity on every frame.
 		/// </summary>
@@ -108,14 +107,7 @@ namespace Com.MyCompany.MyGame
         /// <param name="other">Other.</param>
         public override void OnPlayerEnteredRoom( Player other  )
 		{
-			Debug.Log( "OnPlayerEnteredRoom() " + other.NickName); // not seen if you're the player connecting
-
-			if ( PhotonNetwork.IsMasterClient )
-			{
-				Debug.LogFormat( "OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient ); // called before OnPlayerLeftRoom
-				
-				LoadArena();
-			}
+			//TODO kick or transfert the player
 		}
 
 		/// <summary>
@@ -124,14 +116,7 @@ namespace Com.MyCompany.MyGame
 		/// <param name="other">Other.</param>
 		public override void OnPlayerLeftRoom( Player other  )
 		{
-			Debug.Log( "OnPlayerLeftRoom() " + other.NickName ); // seen when other disconnects
-
-			if ( PhotonNetwork.IsMasterClient )
-			{
-				Debug.LogFormat( "OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient ); // called before OnPlayerLeftRoom
-
-				LoadArena(); 
-			}
+			//TODO destroy + remplacer par ia si vivant
 		}
 
 		/// <summary>
@@ -160,18 +145,6 @@ namespace Com.MyCompany.MyGame
 
 		#region Private Methods
 
-		void LoadArena()
-		{
-			/*if ( ! PhotonNetwork.IsMasterClient )
-			{
-				Debug.LogError( "PhotonNetwork : Trying to Load a level but we are not the master Client" );
-			}
-
-			Debug.LogFormat( "PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount );
-
-			PhotonNetwork.LoadLevel("Room for "+PhotonNetwork.CurrentRoom.PlayerCount);
-			*/
-		}
 
 		#endregion
 

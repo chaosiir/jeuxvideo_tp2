@@ -14,11 +14,7 @@ namespace Com.MyCompany.MyGame
     {
         #region Private Fields
         
-        [Tooltip("The current Health of our player")]
-        public float Health = 1f;
-        [Tooltip("The Beams GameObject to control")]
-        [SerializeField]
-        private GameObject beams;
+
         //True, when the user is firing
         bool IsFiring;
         #endregion
@@ -39,14 +35,7 @@ namespace Com.MyCompany.MyGame
                 PlayerManager.LocalPlayerInstance = this.gameObject;
             }
             //DontDestroyOnLoad(this.gameObject);
-            if (beams == null)
-            {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> Beams Reference.", this);
-            }
-            else
-            {
-                beams.SetActive(false);
-            }
+
             
             GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
             _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
@@ -83,23 +72,7 @@ namespace Com.MyCompany.MyGame
         void Update()
         {
 
-            // we only process Inputs if we are the local player
-            if (photonView.IsMine)
-            {
-                ProcessInputs ();
-                if (Health <= 0f)
-                {
-                    
-                    GameManager.Instance.Respawn(this.gameObject);
 
-                }
-            }
-
-            // trigger Beams active state
-            if (beams != null && IsFiring != beams.activeSelf)
-            {
-                beams.SetActive(IsFiring);
-            }
 
         }
 
@@ -107,17 +80,7 @@ namespace Com.MyCompany.MyGame
         #endregion
         void OnTriggerEnter(Collider other)
         {
-            if (!photonView.IsMine)
-            {
-                return;
-            }
-            // We are only interested in Beamers
-            // we should be using tags but for the sake of distribution, let's simply check by name.
-            if (!other.name.Contains("Beam"))
-            {
-                return;
-            }
-            Health -= 0.1f;
+
         }
         /// <summary>
         /// MonoBehaviour method called once per frame for every Collider 'other' that is touching the trigger.
@@ -126,19 +89,7 @@ namespace Com.MyCompany.MyGame
         /// <param name="other">Other.</param>
         void OnTriggerStay(Collider other)
         {
-            // we dont' do anything if we are not the local player.
-            if (! photonView.IsMine)
-            {
-                return;
-            }
-            // We are only interested in Beamers
-            // we should be using tags but for the sake of distribution, let's simply check by name.
-            if (!other.name.Contains("Beam"))
-            {
-                return;
-            }
-            // we slowly affect health when beam is constantly hitting us, so player has to move to prevent death.
-            Health -= 0.5f*Time.deltaTime;
+
         }
         #region Custom
 
@@ -174,16 +125,12 @@ namespace Com.MyCompany.MyGame
         {
             if (stream.IsWriting)
             {
-                // We own this player: send the others our data
-                stream.SendNext(IsFiring);
-                stream.SendNext(Health);
+
                 
             }
             else
             {
-                // Network player, receive data
-                this.IsFiring = (bool)stream.ReceiveNext();
-                this.Health = (float)stream.ReceiveNext();
+
             }
         }
 
