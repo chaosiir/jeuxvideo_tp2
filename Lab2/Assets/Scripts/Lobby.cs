@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement; 
 using UnityEngine.UI; 
  
-public class Lobby : MonoBehaviourPunCallbacks 
+public class Lobby : MonoBehaviourPunCallbacks ,IPunObservable
 { 
     public InputField player1; //pour afficher les noms des joueurs dans la partie  
     public InputField player2;  
@@ -17,7 +17,7 @@ public class Lobby : MonoBehaviourPunCallbacks
     public Text start;
     private Player[] players;
     private bool isStarting=false;
-    private float tstart;
+    private float tstart=0;
     // Start is called before the first frame update 
     void Start()
     {
@@ -101,12 +101,40 @@ public class Lobby : MonoBehaviourPunCallbacks
                 player4.text = "Empty";
                 break; 
         } 
-    } 
- 
-    public void startGame()
+    }
+
+    public void clickLaunch()
     {
         isStarting = true;
         tstart = Time.time;
         start.enabled = true;
-    } 
+    }
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting && PhotonNetwork.IsMasterClient)//comme il n'y a que l'hote qui peut clicker sur launch il est les seul a ecrire
+        {
+            // We own this player: send the others our data
+            stream.SendNext(isStarting);
+            stream.SendNext(start.enabled);
+  
+                
+        }
+        else
+        {
+            // Network player, receive data
+            if(!stream.IsWriting )
+            {
+                isStarting = (bool)stream.ReceiveNext();
+                start.enabled = (bool)stream.ReceiveNext();
+                if (isStarting && tstart==0)//des qu'on recois le signal isStarting a vrai on initialise tstart car tout les jeux n'ont
+                {//pas des horloges synchros , on ne veut l'initialiser qu'une fois donc pourcela on verifie que tstart=0
+                   
+                    tstart = Time.time;//on sait comme cela depuis combien de temps on a reçu isStarting=true
+                }
+            }
+            
+        }
+    }
 } 

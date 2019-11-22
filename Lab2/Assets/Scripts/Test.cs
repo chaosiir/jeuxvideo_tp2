@@ -5,19 +5,14 @@ using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Test : MonoBehaviour
+public class Test : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     public Text players;
 
     void Start()
     {
-        foreach (Player pl in PhotonNetwork.PlayerList)
-        {
-            Debug.Log(pl.NickName);
-
-            players.text = players.text + " " + pl.NickName;
-        }
+        PhotonNetwork.Instantiate("Lobby", Vector3.zero, Quaternion.identity);
     }
 
     // Update is called once per frame
