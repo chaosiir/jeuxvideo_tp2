@@ -34,7 +34,7 @@ public class Lobby : MonoBehaviourPunCallbacks ,IPunObservable
 
         if (isStarting)
         {
-            start.text = (5 - (int)Math.Floor(Time.time - tstart)).ToString();
+            start.text = (0 - (int)Math.Floor(Time.time - tstart)).ToString();
             if (start.text.Equals("0"))
             {
                 start.text = "Go!";
