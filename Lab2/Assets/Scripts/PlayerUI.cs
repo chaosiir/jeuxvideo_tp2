@@ -9,7 +9,6 @@ namespace Com.MyCompany.MyGame
 {
     public class PlayerUI : MonoBehaviour
     {
-        #region Private Fields
         private PlayerManager target;
         [Tooltip("Pixel offset from the player target")]
         [SerializeField]
@@ -25,15 +24,6 @@ namespace Com.MyCompany.MyGame
         Vector3 targetPosition;
 
 
-        #endregion
-
-
-        #region MonoBehaviour Callbacks
-
-
-        #endregion
-
-
         #region Public Methods
 
         public void SetTarget(PlayerManager _target)
@@ -47,7 +37,9 @@ namespace Com.MyCompany.MyGame
             target = _target;
             targetTransform = this.target.GetComponent<Transform>();
             targetRenderer = this.target.GetComponent<Renderer>();
+
             CharacterController characterController = _target.GetComponent<CharacterController> ();
+            
 // Get data from the Player that won't change during the lifetime of this Component
             if (characterController != null)
             {
@@ -65,7 +57,6 @@ namespace Com.MyCompany.MyGame
         }
         void Update()
         {
-
             if (target == null)
             {
                 Destroy(this.gameObject);

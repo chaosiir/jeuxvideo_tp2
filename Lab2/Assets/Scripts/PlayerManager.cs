@@ -25,8 +25,10 @@ namespace Com.MyCompany.MyGame
         [Tooltip("The Player's UI GameObject Prefab")]
         [SerializeField]
         public GameObject PlayerUiPrefab;
-        
+
+        private GameObject healthbar;
         private float playerSpeed;
+        public float health=10;
         private static float MAX_SPEED = 150.0f;
         private static float ACCEL = 50.0f;
 
@@ -47,6 +49,8 @@ namespace Com.MyCompany.MyGame
             {
                 GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+                healthbar=GameObject.Find("healthbar");
+                healthbar.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
             }
         }
         void Start()
@@ -84,16 +88,18 @@ namespace Com.MyCompany.MyGame
         
         public void OnCollisionEnter(Collision other)
         {
-            if (other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
+            this.hit();
+            if (photonView.IsMine && other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
             {
                 PhotonNetwork.Destroy(other.gameObject);//on detruit le laser
-                this.hit();
+                
             }
         }
 
         public void hit()
         {
-            Debug.Log("hit");
+            health--;
+            healthbar.SendMessage("Update_health", this, SendMessageOptions.RequireReceiver);
         }
 
         /// <summary>
