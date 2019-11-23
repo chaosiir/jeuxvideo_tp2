@@ -25,11 +25,10 @@ namespace Com.MyCompany.MyGame
         [Tooltip("The Player's UI GameObject Prefab")]
         [SerializeField]
         public GameObject PlayerUiPrefab;
-        #region MonoBehaviour CallBacks
         
         private float playerSpeed;
         private static float MAX_SPEED = 150.0f;
-        private static float ACCEL = 1.5f;
+        private static float ACCEL = 5f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
@@ -68,19 +67,6 @@ namespace Com.MyCompany.MyGame
                     _cameraWork.OnStartFollowing();
                 }
             }
-            /*else
-            {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
-            }
-            if (PlayerUiPrefab != null)
-            {
-                GameObject _uiGo =  Instantiate(PlayerUiPrefab);
-                _uiGo.SendMessage ("SetTarget", this, SendMessageOptions.RequireReceiver);
-            }
-            else
-            {
-                Debug.LogWarning("<Color=Red><a>Missing</a></Color> PlayerUiPrefab reference on player Prefab.", this);
-            }*/
         }
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity on every frame.
@@ -95,21 +81,20 @@ namespace Com.MyCompany.MyGame
         }
 
         
-        #endregion
-        void OnTriggerEnter(Collider other)
+        
+        public void OnCollisionEnter(Collision other)
         {
-
+            if (other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
+            {
+                PhotonNetwork.Destroy(other.gameObject);//on detruit le laser
+                this.hit();
+            }
         }
-        /// <summary>
-        /// MonoBehaviour method called once per frame for every Collider 'other' that is touching the trigger.
-        /// We're going to affect health while the beams are touching the player
-        /// </summary>
-        /// <param name="other">Other.</param>
-        void OnTriggerStay(Collider other)
+
+        public void hit()
         {
-
+            Debug.Log("hit");
         }
-        #region Custom
 
         /// <summary>
         /// Processes the inputs. Maintain a flag representing when the user is pressing Fire.
@@ -146,24 +131,12 @@ namespace Com.MyCompany.MyGame
             
             if (Input.GetKeyDown(controlKeys["Fire1"]))
             {
-                if (!IsFiring)
-                {
-                    IsFiring = true;
-                }
+                PhotonNetwork.Instantiate("Laser", transform.position + 20 * transform.forward, transform.rotation);
             }
- 
-            if (Input.GetKeyUp(controlKeys["Fire1"]))
-            {
-                if (IsFiring)
-                {
-                    IsFiring = false;
-                }
-            }
+            
         }
-
-        #endregion
         
-        #region IPunObservable implementation
+        
 
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -180,7 +153,7 @@ namespace Com.MyCompany.MyGame
         }
 
 
-        #endregion
+        
     }
     
     
