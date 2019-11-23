@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2561893831376401784}
   - component: {fileID: -3843729115603409647}
   - component: {fileID: 7074000126609004604}
+  - component: {fileID: 7791913196666028139}
   m_Layer: 0
   m_Name: joueur_humain
   m_TagString: Player
@@ -149,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 0.1
-  height: 150
+  height: 200
   heightSmoothLag: 1
   centerOffset: {x: 0, y: 0, z: 0}
   followOnStart: 0
@@ -168,6 +169,18 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
+--- !u!114 &7791913196666028139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435922040024388356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0700519fb9f71a94d9fadd784ad55f6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &436149128657196960
 GameObject:
   m_ObjectHideFlags: 0

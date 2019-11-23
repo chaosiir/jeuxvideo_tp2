@@ -116,7 +116,7 @@ namespace Com.MyCompany.MyGame
 		/// <param name="other">Other.</param>
 		public override void OnPlayerLeftRoom( Player other  )
 		{
-			//TODO destroy + remplacer par ia si vivant
+			//TODO destroy player
 		}
 
 		/// <summary>

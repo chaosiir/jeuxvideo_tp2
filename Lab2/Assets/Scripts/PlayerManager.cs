@@ -79,7 +79,6 @@ namespace Com.MyCompany.MyGame
                 ProcessInputs ();
             }
 
-
         }
 
         
