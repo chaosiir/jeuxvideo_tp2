@@ -44,13 +44,6 @@ public class ControlSetting : MonoBehaviour
                 currentKeyToSetup.GetComponent<Image>().color = defaultColor;
                 currentKeyToSetup = null;
             }
-            /*else if (e.isMouse)
-            {
-                controlKeys[currentKeyToSetup.name] = ;
-                currentKeyToSetup.transform.GetChild(0).GetComponent<Text>().text = e.keyCode.ToString();
-                currentKeyToSetup.GetComponent<Image>().color = defaultColor;
-                currentKeyToSetup = null;
-            }*/
         }
     }
 
