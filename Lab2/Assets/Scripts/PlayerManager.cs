@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 
 using System.Collections;
+using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
 
@@ -25,6 +26,8 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         public GameObject PlayerUiPrefab;
         #region MonoBehaviour CallBacks
+        
+        public Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
@@ -47,7 +50,12 @@ namespace Com.MyCompany.MyGame
         {
             CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
 
-
+            controlKeys.Add("Up1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Up1","W")));
+            controlKeys.Add("Down1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Down1","S")));
+            controlKeys.Add("Left1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left1","A")));
+            controlKeys.Add("Right1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right1","D")));
+            controlKeys.Add("Fire1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Fire1","Space")));
+            
             if (_cameraWork != null)
             {
                 if (photonView.IsMine)
@@ -103,38 +111,38 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         void ProcessInputs()
         {
-            if (Input.GetKey("left"))
+            if (Input.GetKey(controlKeys["Up1"]))
             {
-                LocalPlayerInstance.transform.Translate(Vector3.left);
+                LocalPlayerInstance.transform.Translate(Vector3.forward);
             }
-            if (Input.GetKey("right"))
+            if (Input.GetKey(controlKeys["Down1"]))
             {
-                LocalPlayerInstance.transform.Translate(Vector3.right);
+                LocalPlayerInstance.transform.Translate(Vector3.back);
             }
-            if (Input.GetKey("up"))
+            if (Input.GetKey(controlKeys["Right1"]))
             {
                 LocalPlayerInstance.transform.Rotate(0,2,0);
             }
-            if (Input.GetKey("down"))
+            if (Input.GetKey(controlKeys["Left1"]))
             {
                 LocalPlayerInstance.transform.Rotate(0,-2,0);
             }
 
-            /* if (Input.GetButtonDown("Fire1"))
-             {
-                 if (!IsFiring)
-                 {
-                     IsFiring = true;
-                 }
-             }
+            if (Input.GetKeyDown(controlKeys["Fire1"]))
+            {
+                if (!IsFiring)
+                {
+                    IsFiring = true;
+                }
+            }
  
-             if (Input.GetButtonUp("Fire1"))
-             {
-                 if (IsFiring)
-                 {
-                     IsFiring = false;
-                 }
-             }*/
+            if (Input.GetKeyUp(controlKeys["Fire1"]))
+            {
+                if (IsFiring)
+                {
+                    IsFiring = false;
+                }
+            }
         }
 
         #endregion
