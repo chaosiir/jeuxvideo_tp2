@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ControlSetting : MonoBehaviour
 {
 
-    private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
+    public Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
     public Text Up1, Down1, Left1, Right1, Fire1;
     
@@ -31,12 +32,6 @@ public class ControlSetting : MonoBehaviour
         Fire1.text = controlKeys["Fire1"].ToString();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnGUI()
     {
         if (currentKeyToSetup != null)
@@ -49,6 +44,13 @@ public class ControlSetting : MonoBehaviour
                 currentKeyToSetup.GetComponent<Image>().color = defaultColor;
                 currentKeyToSetup = null;
             }
+            /*else if (e.isMouse)
+            {
+                controlKeys[currentKeyToSetup.name] = ;
+                currentKeyToSetup.transform.GetChild(0).GetComponent<Text>().text = e.keyCode.ToString();
+                currentKeyToSetup.GetComponent<Image>().color = defaultColor;
+                currentKeyToSetup = null;
+            }*/
         }
     }
 
@@ -71,5 +73,6 @@ public class ControlSetting : MonoBehaviour
         }
         
         PlayerPrefs.Save();
+        SceneManager.LoadScene("Launcher");
     }
 }

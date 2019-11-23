@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 namespace Com.MyCompany.MyGame
 {
@@ -127,6 +128,11 @@ namespace Com.MyCompany.MyGame
                 PhotonNetwork.GameVersion = gameVersion;
                 PhotonNetwork.ConnectUsingSettings();
             }
+        }
+        
+        public void GoToSettings()
+        {
+            SceneManager.LoadScene("Settings");
         }
 
 
