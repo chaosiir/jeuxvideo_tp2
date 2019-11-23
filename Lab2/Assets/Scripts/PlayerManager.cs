@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 using System.Collections;
@@ -28,7 +28,7 @@ namespace Com.MyCompany.MyGame
         
         private float playerSpeed;
         private static float MAX_SPEED = 150.0f;
-        private static float ACCEL = 5f;
+        private static float ACCEL = 50.0f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
@@ -106,7 +106,7 @@ namespace Com.MyCompany.MyGame
             {
                 if (playerSpeed < MAX_SPEED)
                 {
-                    playerSpeed += ACCEL;
+                    playerSpeed += ACCEL * Time.deltaTime;
                     
                 }
             }
@@ -114,7 +114,7 @@ namespace Com.MyCompany.MyGame
             {
                 if (playerSpeed > -(MAX_SPEED))
                 {
-                    playerSpeed -= ACCEL;
+                    playerSpeed -= ACCEL * Time.deltaTime;
                     
                 }
             }
