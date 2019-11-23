@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class ControlSetting : MonoBehaviour
 {
 
-    public Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
+    private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
     public Text Up1, Down1, Left1, Right1, Fire1;
     
