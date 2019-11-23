@@ -20,11 +20,16 @@ namespace Com.MyCompany.MyGame.AI
         private bool _targetActive;
         private float _cooldownTime;
 
+        public MovementRotationState _movementRotationState;
+        public MovementTranslationState _movementTranslationState;
+
         public AIBehaviour(Transform unit)
         {
             _current = unit;
             _players = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
             _actionState = ActionState.WAITING;
+            _movementRotationState = MovementRotationState.NONE;
+            _movementTranslationState = MovementTranslationState.NONE;
             _targetActive = false;
             _cooldownTime = 0f;
             _pointOfInterest = _current.position;
@@ -35,12 +40,16 @@ namespace Com.MyCompany.MyGame.AI
         {
             var timelapse = Time.deltaTime; 
             playStateAction(timelapse);
-            updateMovement(timelapse);
+            updateMovementState(timelapse);
         }
 
-        private void updateMovement(float timelapse)
+        private void updateMovementState(float timelapse)
         {
-            
+            if (_actionState == ActionState.WANDERING) {
+                movementAdjustmentToObjective(_pointOfInterest, MINIMUM_POI_RANGE);
+            } else if (_actionState == ActionState.APPROACHING) {
+                movementAdjustmentToObjective(_target.position, MINIMUM_SHOOTING_RANGE);
+            }
         }
 
         private void playStateAction(float timelapse)
@@ -167,11 +176,51 @@ namespace Com.MyCompany.MyGame.AI
             }
         }
 
+        private void movementAdjustmentToObjective(Vector3 objective, float minDistance)
+        {
+            var angle = alignmentToObjective(objective);
+            translationToObjective(objective, angle, minDistance);
+        }
+
+        private double alignmentToObjective(Vector3 objective)
+        {
+            var currentPosition = _current.position;
+            var relativeAngle = Util.angleBetweenVec(
+                currentPosition.x,
+                objective.x,
+                currentPosition.z,
+                objective.z);
+            relativeAngle += _current.rotation.eulerAngles.y;
+            if (relativeAngle > 180) {
+                relativeAngle -= 360;
+            }
+            if (relativeAngle > 0) {
+                _movementRotationState = MovementRotationState.LEFT;
+            } else if (relativeAngle < 0) {
+                _movementRotationState = MovementRotationState.RGHT;
+            } else {
+                _movementRotationState = MovementRotationState.NONE;
+            }
+            return relativeAngle;
+        }
+
+        private void translationToObjective(Vector3 objective, double relativeAngle, float minDistance)
+        {
+            var currentPosition = _current.position;
+            var distance = Vector3.Distance(currentPosition, objective);
+            if (distance < minDistance || Math.Abs(relativeAngle) > 90) {
+                _movementTranslationState = MovementTranslationState.SLOW;
+            } else if (Math.Abs(relativeAngle) > 40 || distance < minDistance * 1.5) {
+                _movementTranslationState = MovementTranslationState.HALF_FORWARD;
+            } else {
+                _movementTranslationState = MovementTranslationState.FORWARD;
+            }
+        }
+
         public void removePlayer(GameObject player)
         {
             _players.Remove(player);
-            if (_targetActive && player.transform.Equals(_target))
-            {
+            if (_targetActive && player.transform.Equals(_target)) {
                 forceResetTarget();
             }
         }

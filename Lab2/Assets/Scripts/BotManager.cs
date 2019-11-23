@@ -20,6 +20,7 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.IsMasterClient)
             {
                 LocalPlayerInstance = this.gameObject;
+                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform);
             }
             //DontDestroyOnLoad(this.gameObject);
 
@@ -39,7 +40,8 @@ namespace Com.MyCompany.MyGame
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                
+                _aiBehaviour.update();
+                ProcessInputs();
             }
         }
 
@@ -52,7 +54,23 @@ namespace Com.MyCompany.MyGame
             //_aiBehaviour.removePlayer(other);
             //TODO destroy + remplacer par ia si vivant
         }
-        
+
+        void ProcessInputs()
+        {
+            if (_aiBehaviour._movementTranslationState == MovementTranslationState.FORWARD)
+            {
+                LocalPlayerInstance.transform.Translate(Vector3.forward);
+            } else if (_aiBehaviour._movementTranslationState == MovementTranslationState.HALF_FORWARD) {
+                LocalPlayerInstance.transform.Translate(Vector3.forward * 0.5f);
+            }
+
+            if (_aiBehaviour._movementRotationState == MovementRotationState.RGHT) {
+                LocalPlayerInstance.transform.Rotate(0,2,0);
+            } else if (_aiBehaviour._movementRotationState == MovementRotationState.LEFT) {
+                LocalPlayerInstance.transform.Rotate(0,-2,0);
+            }
+        }
+
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)

@@ -113,7 +113,7 @@ namespace Com.MyCompany.MyGame
         {
             if (Input.GetKey(controlKeys["Up1"]))
             {
-                LocalPlayerInstance.transform.Translate(Vector3.forward);
+                LocalPlayerInstance.transform.Translate(Vector3.forward * 3);
             }
             if (Input.GetKey(controlKeys["Down1"]))
             {
