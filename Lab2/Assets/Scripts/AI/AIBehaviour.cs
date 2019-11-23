@@ -8,9 +8,10 @@ namespace Com.MyCompany.MyGame.AI
     public class AIBehaviour
     {
         public static string PLAYER_TAG = "Player";
-        public static float DETECTION_RANGE = 10f;
-        public static float MINIMUM_POI_RANGE = 3f;
-        public static float MINIMUM_SHOOTING_RANGE = 5f;
+        public static float DETECTION_RANGE = 225f;
+        public static float MINIMUM_POI_RANGE = 30f;
+        public static float MINIMUM_SHOOTING_RANGE = 100f;
+        public static float MINIMUM_PRECISION_ANGLE = 3.0f;
         
         private List<GameObject> _players;
         private Transform _current;
@@ -27,7 +28,7 @@ namespace Com.MyCompany.MyGame.AI
         {
             _current = unit;
             _players = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
-            _actionState = ActionState.WAITING;
+            changeActionState(ActionState.WAITING);
             _movementRotationState = MovementRotationState.NONE;
             _movementTranslationState = MovementTranslationState.NONE;
             _targetActive = false;
@@ -47,8 +48,14 @@ namespace Com.MyCompany.MyGame.AI
         {
             if (_actionState == ActionState.WANDERING) {
                 movementAdjustmentToObjective(_pointOfInterest, MINIMUM_POI_RANGE);
-            } else if (_actionState == ActionState.APPROACHING) {
+            } else if (_actionState == ActionState.APPROACHING || _actionState == ActionState.TARGETING) {
                 movementAdjustmentToObjective(_target.position, MINIMUM_SHOOTING_RANGE);
+                if (_actionState == ActionState.TARGETING) {
+                    if (_movementTranslationState == MovementTranslationState.FORWARD)
+                    {
+                        _movementTranslationState = MovementTranslationState.HALF_FORWARD;
+                    }
+                }
             }
         }
 
@@ -68,6 +75,8 @@ namespace Com.MyCompany.MyGame.AI
                 resumeWanderingAction();
             } else if (_actionState == ActionState.APPROACHING) {
                 resumeApproachAction();
+            } else if (_actionState == ActionState.TARGETING) {
+                resumeTargetingAction();
             }
         }
 
@@ -76,7 +85,7 @@ namespace Com.MyCompany.MyGame.AI
         {
             searchTarget();
             if (_targetActive) {
-                _actionState = ActionState.TARGETING;
+                changeActionState(ActionState.APPROACHING);
                 _cooldownTime = 1f;
             } else {
                 if (Vector3.Distance(_current.position, _pointOfInterest) < MINIMUM_POI_RANGE) {
@@ -92,6 +101,11 @@ namespace Com.MyCompany.MyGame.AI
             }
         }
 
+        private void resumeTargetingAction()
+        {
+            // if aligned with the target, shoot!!!!!
+        }
+
         private void completeStateAction()
         {
             if (_actionState == ActionState.WAITING) {
@@ -100,6 +114,8 @@ namespace Com.MyCompany.MyGame.AI
                 completeWanderingAction();
             } else if (_actionState == ActionState.APPROACHING) {
                 completeApproachAction();
+            } else if (_actionState == ActionState.TARGETING) {
+                completeTargetingAction();
             }
         }
 
@@ -107,10 +123,10 @@ namespace Com.MyCompany.MyGame.AI
         {
             searchTarget();
             if (_targetActive) {
-                _actionState = ActionState.TARGETING;
+                changeActionState(ActionState.APPROACHING);
                 _cooldownTime = 1f;
             } else {
-                _actionState = ActionState.WANDERING;
+                changeActionState(ActionState.WANDERING);
                 _cooldownTime = 4f;
                 _pointOfInterest = generatePointOfInterest();
             }
@@ -118,13 +134,38 @@ namespace Com.MyCompany.MyGame.AI
 
         private void completeWanderingAction()
         {
-            _actionState = ActionState.WAITING;
+            changeActionState(ActionState.WAITING);
             _cooldownTime = Random.Range(1f, 3f);
         }
 
         private void completeApproachAction()
         {
-            
+            var targetDistance = Vector3.Distance(_current.position, _target.position);
+            if (targetDistance > DETECTION_RANGE) {
+                changeActionState(ActionState.WAITING);
+                _cooldownTime = Random.Range(1f, 3f);
+            } else if (targetDistance > MINIMUM_SHOOTING_RANGE) {
+                _cooldownTime = 1.0f;
+            } else {
+                changeActionState(ActionState.TARGETING);
+                _cooldownTime = 1.0f;
+            }
+            _cooldownTime = Random.Range(1f, 3f);
+        }
+
+        private void completeTargetingAction()
+        {
+            var targetDistance = Vector3.Distance(_current.position, _target.position);
+            if (targetDistance > DETECTION_RANGE)
+            {
+                changeActionState(ActionState.WAITING);
+                _cooldownTime = Random.Range(1f, 3f);
+            } else if (targetDistance > MINIMUM_SHOOTING_RANGE) {
+                changeActionState(ActionState.APPROACHING);
+                _cooldownTime = 1.0f;
+            } else {
+                _cooldownTime = 1.0f;
+            }
         }
 
         private void searchTarget()
@@ -171,7 +212,7 @@ namespace Com.MyCompany.MyGame.AI
             _target = null;
             if (_actionState != ActionState.WAITING && _actionState != ActionState.WANDERING)
             {
-                _actionState = ActionState.WAITING;
+                changeActionState(ActionState.WAITING);
                 _cooldownTime = Random.Range(1f, 3f);
             }
         }
@@ -190,14 +231,16 @@ namespace Com.MyCompany.MyGame.AI
                 objective.x,
                 currentPosition.z,
                 objective.z);
-            relativeAngle += _current.rotation.eulerAngles.y;
-            if (relativeAngle > 180) {
+            relativeAngle -= _current.rotation.eulerAngles.y;
+            if (relativeAngle < -180) {
+                relativeAngle += 360;
+            } else if (relativeAngle > 180) {
                 relativeAngle -= 360;
             }
-            if (relativeAngle > 0) {
+            if (relativeAngle > MINIMUM_PRECISION_ANGLE) {
                 _movementRotationState = MovementRotationState.LEFT;
-            } else if (relativeAngle < 0) {
-                _movementRotationState = MovementRotationState.RGHT;
+            } else if (relativeAngle < -MINIMUM_PRECISION_ANGLE) {
+                _movementRotationState = MovementRotationState.RIGHT;
             } else {
                 _movementRotationState = MovementRotationState.NONE;
             }
@@ -215,6 +258,12 @@ namespace Com.MyCompany.MyGame.AI
             } else {
                 _movementTranslationState = MovementTranslationState.FORWARD;
             }
+        }
+
+        private void changeActionState(ActionState newState)
+        {
+            _actionState = newState;
+            Debug.LogFormat("New state selected: {0}", newState.ToString());
         }
 
         public void removePlayer(GameObject player)

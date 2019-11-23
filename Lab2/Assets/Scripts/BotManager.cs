@@ -7,12 +7,18 @@ namespace Com.MyCompany.MyGame
 {
     public class BotManager : MonoBehaviourPunCallbacks, IPunObservable
     {
+        private static float MAX_SPEED = 120.0f;
+        private static float TRANSLATION_ACCELERATION = 30.0f;
+        private static float ROTATION_SPEED = 70.0f;
+        
         private GameObject LocalPlayerInstance;
         
         //[SerializeField]
         //public GameObject PlayerUiPrefab;
         
         private bool IsFiring;
+        private float _speed;
+        
         private AIBehaviour _aiBehaviour;
         
         void Awake()
@@ -57,17 +63,33 @@ namespace Com.MyCompany.MyGame
 
         void ProcessInputs()
         {
+            var timelapse = Time.deltaTime;
             if (_aiBehaviour._movementTranslationState == MovementTranslationState.FORWARD)
             {
-                LocalPlayerInstance.transform.Translate(Vector3.forward);
+                if (_speed < MAX_SPEED)
+                {
+                    _speed += TRANSLATION_ACCELERATION * timelapse;
+                }
+                
             } else if (_aiBehaviour._movementTranslationState == MovementTranslationState.HALF_FORWARD) {
-                LocalPlayerInstance.transform.Translate(Vector3.forward * 0.5f);
+                if (_speed < MAX_SPEED / 2)
+                {
+                    _speed += TRANSLATION_ACCELERATION * timelapse;
+                } else {
+                    _speed -= TRANSLATION_ACCELERATION * timelapse;
+                }
+            } else if (_aiBehaviour._movementTranslationState == MovementTranslationState.SLOW) {
+                if (_speed > 0) {
+                    _speed -= TRANSLATION_ACCELERATION * timelapse;
+                } else {
+                    _speed = 0;
+                }
             }
-
-            if (_aiBehaviour._movementRotationState == MovementRotationState.RGHT) {
-                LocalPlayerInstance.transform.Rotate(0,2,0);
-            } else if (_aiBehaviour._movementRotationState == MovementRotationState.LEFT) {
-                LocalPlayerInstance.transform.Rotate(0,-2,0);
+            LocalPlayerInstance.transform.Translate(0, 0, _speed * Time.deltaTime);
+            if (_aiBehaviour._movementRotationState == MovementRotationState.LEFT) {
+                LocalPlayerInstance.transform.Rotate(0,ROTATION_SPEED * Time.deltaTime,0);
+            } else if (_aiBehaviour._movementRotationState == MovementRotationState.RIGHT) {
+                LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
             }
         }
 

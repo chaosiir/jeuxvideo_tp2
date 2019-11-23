@@ -27,7 +27,11 @@ namespace Com.MyCompany.MyGame
         public GameObject PlayerUiPrefab;
         #region MonoBehaviour CallBacks
         
-        public Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
+        private float playerSpeed;
+        private static float MAX_SPEED = 150.0f;
+        private static float ACCEL = 1.5f;
+
+        private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
@@ -50,6 +54,7 @@ namespace Com.MyCompany.MyGame
         {
             CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
 
+            playerSpeed = 0;
             controlKeys.Add("Up1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Up1","W")));
             controlKeys.Add("Down1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Down1","S")));
             controlKeys.Add("Left1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left1","A")));
@@ -111,14 +116,24 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         void ProcessInputs()
         {
+            
             if (Input.GetKey(controlKeys["Up1"]))
             {
-                LocalPlayerInstance.transform.Translate(Vector3.forward * 3);
+                if (playerSpeed < MAX_SPEED)
+                {
+                    playerSpeed += ACCEL;
+                    
+                }
             }
-            if (Input.GetKey(controlKeys["Down1"]))
+            else if (Input.GetKey(controlKeys["Down1"]))
             {
-                LocalPlayerInstance.transform.Translate(Vector3.back);
+                if (playerSpeed > -(MAX_SPEED))
+                {
+                    playerSpeed -= ACCEL;
+                    
+                }
             }
+            LocalPlayerInstance.transform.Translate(0, 0, playerSpeed * Time.deltaTime);
             if (Input.GetKey(controlKeys["Right1"]))
             {
                 LocalPlayerInstance.transform.Rotate(0,2,0);
@@ -127,7 +142,8 @@ namespace Com.MyCompany.MyGame
             {
                 LocalPlayerInstance.transform.Rotate(0,-2,0);
             }
-
+            
+            
             if (Input.GetKeyDown(controlKeys["Fire1"]))
             {
                 if (!IsFiring)
