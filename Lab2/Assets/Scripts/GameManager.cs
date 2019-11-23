@@ -148,6 +148,13 @@ namespace Com.MyCompany.MyGame
 
 		#endregion
 
-	}
-
+		private void buildEnemyWave()
+		{
+			for (var i = 0; i < 2; i++)
+			{
+				PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)),
+					Quaternion.identity);
+			}
+		}
+    }
 }

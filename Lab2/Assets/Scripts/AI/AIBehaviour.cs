@@ -12,7 +12,7 @@ namespace Com.MyCompany.MyGame.AI
         public static float MINIMUM_POI_RANGE = 3f;
         public static float MINIMUM_SHOOTING_RANGE = 5f;
         
-        private Queue<GameObject> _players;
+        private List<GameObject> _players;
         private Transform _current;
         private ActionState _actionState;
         private Vector3 _pointOfInterest;
@@ -23,7 +23,7 @@ namespace Com.MyCompany.MyGame.AI
         public AIBehaviour(Transform unit)
         {
             _current = unit;
-            _players = new Queue<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
+            _players = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
             _actionState = ActionState.WAITING;
             _targetActive = false;
             _cooldownTime = 0f;
@@ -154,6 +154,26 @@ namespace Com.MyCompany.MyGame.AI
         {
             _target = newTarget;
             _targetActive = true;
+        }
+
+        private void forceResetTarget()
+        {
+            _targetActive = false;
+            _target = null;
+            if (_actionState != ActionState.WAITING && _actionState != ActionState.WANDERING)
+            {
+                _actionState = ActionState.WAITING;
+                _cooldownTime = Random.Range(1f, 3f);
+            }
+        }
+
+        public void removePlayer(GameObject player)
+        {
+            _players.Remove(player);
+            if (_targetActive && player.transform.Equals(_target))
+            {
+                forceResetTarget();
+            }
         }
     }
 }
