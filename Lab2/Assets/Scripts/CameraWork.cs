@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
 
@@ -9,33 +10,14 @@ namespace Com.MyCompany.MyGame
     /// </summary>
     public class CameraWork : MonoBehaviour
     {
-        #region Private Fields
-
-
-        [Tooltip("The distance in the local x-z plane to the target")]
-        [SerializeField]
-        private float distance = 0.1f;
-
 
         [Tooltip("The height we want the camera to be above the target")]
         [SerializeField]
         private float height = 150.0f;
+        
 
-
-        [Tooltip("The Smooth time lag for the height of the camera.")]
-        [SerializeField]
-        private float heightSmoothLag = 1f;
-
-
-        [Tooltip("Allow the camera to be offseted vertically from the target, for example giving more view of the sceneray and less ground.")]
-        [SerializeField]
-        private Vector3 centerOffset = Vector3.zero;
-
-
-        [Tooltip("Set this as false if a component of a prefab being instanciated by Photon Network, and manually call OnStartFollowing() when and if needed.")]
-        [SerializeField]
-        private bool followOnStart = true;
-
+        private int xmax = 320;
+        private int zmax = 220;
 
         // cached transform of the target
         Transform cameraTransform;
@@ -43,32 +25,10 @@ namespace Com.MyCompany.MyGame
 
         // maintain a flag internally to reconnect if target is lost or camera is switched
         bool isFollowing;
+        
 
-
-        // Represents the current velocity, this value is modified by SmoothDamp() every time you call it.
-        private float heightVelocity;
-
-
-        // Represents the position we are trying to reach using SmoothDamp()
-        private float targetHeight = 100000.0f;
-
-
-        #endregion
-
-
-        #region MonoBehaviour Callbacks
-
-
-        /// <summary>
-        /// MonoBehaviour method called on GameObject by Unity during initialization phase
-        /// </summary>
         void Start()
         {
-            // Start following the target if wanted.
-            if (followOnStart)
-            {
-                OnStartFollowing();
-            }
 
 
         }
@@ -92,12 +52,7 @@ namespace Com.MyCompany.MyGame
             }
         }
 
-
-        #endregion
-
-
-        #region Public Methods
-
+        
 
         /// <summary>
         /// Raises the start following event.
@@ -108,14 +63,8 @@ namespace Com.MyCompany.MyGame
             cameraTransform = Camera.main.transform;
             isFollowing = true;
             // we don't smooth anything, we go straight to the right camera shot
-            Cut();
+            Apply	();
         }
-
-
-        #endregion
-
-
-        #region Private Methods
 
 
         /// <summary>
@@ -123,61 +72,24 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         void Apply()
         {
-            Vector3 targetCenter = transform.position + centerOffset;
-            // Calculate the current & target rotation angles
-            float originalTargetAngle = transform.eulerAngles.y;
-            float currentAngle = cameraTransform.eulerAngles.y;
-            // Adjust real target angle when camera is locked
-            float targetAngle = originalTargetAngle;
-            currentAngle = targetAngle;
-            targetHeight = targetCenter.y + height;
+            Vector3 targetCenter = transform.position;
+            targetCenter.x = (targetCenter.x < -xmax) ? -xmax : targetCenter.x;
+            targetCenter.x = (targetCenter.x > xmax) ? xmax : targetCenter.x;
+            targetCenter.z = (targetCenter.z < -zmax) ? -zmax : targetCenter.z;
+            targetCenter.z = (targetCenter.z > zmax) ? zmax : targetCenter.z;
 
 
-            // Damp the height
             float currentHeight = cameraTransform.position.y;
-            currentHeight = Mathf.SmoothDamp( currentHeight, targetHeight, ref heightVelocity, heightSmoothLag );
-            // Convert the angle into a rotation, by which we then reposition the camera
-            Quaternion currentRotation = Quaternion.Euler( 0, currentAngle, 0 );
-            // Set the position of the camera on the x-z plane to:
-            // distance meters behind the target
             cameraTransform.position = targetCenter;
-            cameraTransform.position += currentRotation * Vector3.back * distance;
-            // Set the height of the camera
-            cameraTransform.position = new Vector3( cameraTransform.position.x, currentHeight, cameraTransform.position.z );
+            cameraTransform.position = new Vector3(cameraTransform.position.x, currentHeight, cameraTransform.position.z );
             // Always look at the target
             
             
             //SetUpRotation(targetCenter);
         }
 
+        
 
-        /// <summary>
-        /// Directly position the camera to a the specified Target and center.
-        /// </summary>
-        void Cut()
-        {
-            float oldHeightSmooth = heightSmoothLag;
-            heightSmoothLag = 0.001f;
-            Apply();
-            heightSmoothLag = oldHeightSmooth;
-        }
-
-
-        /// <summary>
-        /// Sets up the rotation of the camera to always be behind the target
-        /// </summary>
-        /// <param name="centerPos">Center position.</param>
-        void SetUpRotation( Vector3 centerPos )
-        {
-            Vector3 cameraPos = cameraTransform.position;
-            Vector3 offsetToCenter = centerPos - cameraPos;
-            // Generate base rotation only around y-axis
-            Quaternion yRotation = Quaternion.LookRotation( new Vector3(  offsetToCenter.x,0, offsetToCenter.z ) );
-            Vector3 relativeOffset = Vector3.forward * distance + Vector3.down * height;
-            cameraTransform.rotation =yRotation*Quaternion.LookRotation( relativeOffset );
-        }
-
-
-        #endregion
+        
     }
 }
