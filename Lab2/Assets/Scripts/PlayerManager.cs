@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 
 using System.Collections;
 using Photon.Pun;
+using Photon.Realtime;
 
 namespace Com.MyCompany.MyGame
 {
@@ -36,9 +37,11 @@ namespace Com.MyCompany.MyGame
             }
             //DontDestroyOnLoad(this.gameObject);
 
-            
-            GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
-            _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+            if (tag.Equals("Player"))
+            {
+                GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
+                _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+            }
         }
         void Start()
         {
@@ -52,7 +55,7 @@ namespace Com.MyCompany.MyGame
                     _cameraWork.OnStartFollowing();
                 }
             }
-            else
+            /*else
             {
                 Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
             }
@@ -64,14 +67,17 @@ namespace Com.MyCompany.MyGame
             else
             {
                 Debug.LogWarning("<Color=Red><a>Missing</a></Color> PlayerUiPrefab reference on player Prefab.", this);
-            }
+            }*/
         }
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity on every frame.
         /// </summary>
         void Update()
         {
-
+            if (photonView.IsMine)
+            {
+                ProcessInputs ();
+            }
 
 
         }
@@ -98,22 +104,38 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         void ProcessInputs()
         {
-
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetKey("left"))
             {
-                if (!IsFiring)
-                {
-                    IsFiring = true;
-                }
+                LocalPlayerInstance.transform.Translate(Vector3.left);
+            }
+            if (Input.GetKey("right"))
+            {
+                LocalPlayerInstance.transform.Translate(Vector3.right);
+            }
+            if (Input.GetKey("up"))
+            {
+                LocalPlayerInstance.transform.Rotate(0,2,0);
+            }
+            if (Input.GetKey("down"))
+            {
+                LocalPlayerInstance.transform.Rotate(0,-2,0);
             }
 
-            if (Input.GetButtonUp("Fire1"))
-            {
-                if (IsFiring)
-                {
-                    IsFiring = false;
-                }
-            }
+            /* if (Input.GetButtonDown("Fire1"))
+             {
+                 if (!IsFiring)
+                 {
+                     IsFiring = true;
+                 }
+             }
+ 
+             if (Input.GetButtonUp("Fire1"))
+             {
+                 if (IsFiring)
+                 {
+                     IsFiring = false;
+                 }
+             }*/
         }
 
         #endregion
@@ -125,12 +147,12 @@ namespace Com.MyCompany.MyGame
         {
             if (stream.IsWriting)
             {
-
+                
                 
             }
             else
             {
-
+                
             }
         }
 
