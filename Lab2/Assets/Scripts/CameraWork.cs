@@ -145,7 +145,9 @@ namespace Com.MyCompany.MyGame
             // Set the height of the camera
             cameraTransform.position = new Vector3( cameraTransform.position.x, currentHeight, cameraTransform.position.z );
             // Always look at the target
-            SetUpRotation(targetCenter);
+            
+            
+            //SetUpRotation(targetCenter);
         }
 
 

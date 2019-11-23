@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 458321490114003416}
   - component: {fileID: 499099078067991366}
   - component: {fileID: -4464286550055336964}
-  - component: {fileID: -110743362820920372}
   - component: {fileID: 2561893831376401784}
   - component: {fileID: -3843729115603409647}
+  - component: {fileID: 7074000126609004604}
   m_Layer: 0
   m_Name: joueur_humain
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,25 +117,11 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   ObservedComponents:
-  - {fileID: -110743362820920372}
+  - {fileID: 2561893831376401784}
+  - {fileID: 7074000126609004604}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &-110743362820920372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 435922040024388356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
 --- !u!114 &2561893831376401784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,7 +152,22 @@ MonoBehaviour:
   height: 150
   heightSmoothLag: 1
   centerOffset: {x: 0, y: 0, z: 0}
-  followOnStart: 1
+  followOnStart: 0
+--- !u!114 &7074000126609004604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435922040024388356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
 --- !u!1 &436149128657196960
 GameObject:
   m_ObjectHideFlags: 0
