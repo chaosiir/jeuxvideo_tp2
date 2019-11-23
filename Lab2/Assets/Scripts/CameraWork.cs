@@ -13,11 +13,11 @@ namespace Com.MyCompany.MyGame
 
         [Tooltip("The height we want the camera to be above the target")]
         [SerializeField]
-        private float height = 150.0f;
+        private float height = 200.0f;
         
 
-        private int xmax = 320;
-        private int zmax = 220;
+        private int xmax = 245;
+        private int zmax = 180;
 
         // cached transform of the target
         Transform cameraTransform;
@@ -79,7 +79,7 @@ namespace Com.MyCompany.MyGame
             targetCenter.z = (targetCenter.z > zmax) ? zmax : targetCenter.z;
 
 
-            float currentHeight = cameraTransform.position.y;
+            float currentHeight = height;
             cameraTransform.position = targetCenter;
             cameraTransform.position = new Vector3(cameraTransform.position.x, currentHeight, cameraTransform.position.z );
             // Always look at the target
