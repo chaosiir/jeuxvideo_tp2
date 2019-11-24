@@ -25,13 +25,10 @@ namespace Com.MyCompany.MyGame
 	public class GameManager : MonoBehaviourPunCallbacks
     {
 
-		#region Public Fields
+
 		
 		static public GameManager Instance;
-		
-		#endregion
 
-		#region Private Fields
 
 		private GameObject instance;
 
@@ -41,10 +38,7 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         private GameObject iaPrefab;
 
-        #endregion
-
-        #region MonoBehaviour CallBacks
-
+        
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
@@ -97,10 +91,6 @@ namespace Com.MyCompany.MyGame
 			}
 		}
 
-        #endregion
-
-        #region Photon Callbacks
-
         /// <summary>
         /// Called when a Photon Player got connected. We need to then load a bigger scene.
         /// </summary>
@@ -126,10 +116,7 @@ namespace Com.MyCompany.MyGame
 		{
 			SceneManager.LoadScene("Launcher");
 		}
-
-		#endregion
-
-		#region Public Methods
+		
 
 		public void LeaveRoom()
 		{
@@ -140,13 +127,7 @@ namespace Com.MyCompany.MyGame
 		{
 			Application.Quit();
 		}
-
-		#endregion
-
-		#region Private Methods
-
-
-		#endregion
+		
 
 	}
 
