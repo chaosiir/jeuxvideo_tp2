@@ -88,8 +88,9 @@ namespace Com.MyCompany.MyGame
         /// <param name="other">Other.</param>
         public override void OnPlayerLeftRoom( Player other  )
         {
-            //_aiBehaviour.removePlayer(other);
-            //TODO destroy + remplacer par ia si vivant
+            Debug.Log("Player unsynchronisation");
+            
+            _aiBehaviour.unsyncPlayer();
         }
 
         void ProcessInputs()
@@ -129,6 +130,13 @@ namespace Com.MyCompany.MyGame
                 PhotonNetwork.Instantiate("Laser", transform.position + 20 * transform.forward, transform.rotation);
             }
             
+        }
+
+        public void syncPlayer()
+        {
+            Debug.Log("Player synchronisation:");
+            _aiBehaviour.syncPlayer();
+            Debug.Log("Synchronisation completed");
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

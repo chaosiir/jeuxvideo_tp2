@@ -31,6 +31,7 @@ namespace Com.MyCompany.MyGame
         public float health=10;
         private static float MAX_SPEED = 150.0f;
         private static float ACCEL = 100f;
+        private static float ROTATION_SPEED = 100.0f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
@@ -51,6 +52,11 @@ namespace Com.MyCompany.MyGame
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
                 healthbar = Instantiate(this.healthbar);
                 healthbar.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+                
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                foreach (GameObject enemy in enemies) {
+                        enemy.SendMessage("syncPlayer"); // s'assure que les bots sont synchronisé avec le joueur
+                }
             }
 
         }
@@ -145,11 +151,11 @@ namespace Com.MyCompany.MyGame
             LocalPlayerInstance.transform.Translate(0, 0, playerSpeed * Time.deltaTime);
             if (Input.GetKey(controlKeys["Right1"]))
             {
-                LocalPlayerInstance.transform.Rotate(0,2,0);
+                LocalPlayerInstance.transform.Rotate(0,ROTATION_SPEED * Time.deltaTime,0);
             }
             if (Input.GetKey(controlKeys["Left1"]))
             {
-                LocalPlayerInstance.transform.Rotate(0,-2,0);
+                LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
             }
 
             
