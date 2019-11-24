@@ -7,25 +7,30 @@ namespace Com.MyCompany.MyGame
 {
     public class BotManager : MonoBehaviourPunCallbacks, IPunObservable
     {
-        public bool isSharpshooter = true;
-        
         private static float MAX_SPEED = 120.0f;
         private static float TRANSLATION_ACCELERATION = 30.0f;
         private static float ROTATION_SPEED = 70.0f;
         
         private GameObject LocalPlayerInstance;
-
+        public GameManager game;
+        
+        //[SerializeField]
+        //public GameObject PlayerUiPrefab;
+        
         private bool IsFiring;
         private float _speed;
         private int longeur=11;
         private int largeur=7;
-        
+        private int longeurplayer = 15;
+        private int largeurplayer = 10;
+        public bool destroy=false;
         private AIBehaviour _aiBehaviour;
         
         void Awake()
         {    
             if (PhotonNetwork.IsMasterClient)
-            {
+            {    
+                game = GameObject.Find("Game Manager").GetComponent<GameManager>();
                 LocalPlayerInstance = this.gameObject;
                 _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform, isSharpshooter);
             }
@@ -45,8 +50,9 @@ namespace Com.MyCompany.MyGame
         
         void Update()
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (PhotonNetwork.IsMasterClient && !game.paused)
             {
+
                 _aiBehaviour.update();
                 ProcessInputs();
                 checkcollision();
@@ -58,26 +64,53 @@ namespace Com.MyCompany.MyGame
             GameObject[] lasers= GameObject.FindGameObjectsWithTag("Laser");
             foreach (GameObject obj in lasers)
             {
+                Laser laser = obj.GetComponent<Laser>();// sert à savoir si le laser n'a pas deja effectuer une collision
                 Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position); //on prend la position du laser dans le repere du bot
+                if (!laser.destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                {
+                    
+                    hit	();
+                    PhotonNetwork.Destroy(obj);//on detruit le laser
+
+                }
+            } 
+            GameObject[] players= GameObject.FindGameObjectsWithTag("Player");
+            foreach (GameObject obj in players)
+            {
+                Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position+obj.transform.forward*longeurplayer+obj.transform.right*largeurplayer); 
+                //on prend la position du coin avant droite joueur dans le repere du bot 
                 if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
-                    hit	();
-                    obj.SendMessage	("Destroy");//on demande au laser de se detruire car on peut ne pas avoir les droit de le detruire
+                    
+                    hit	();//on detruit le bot
+                    obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
+                }
+                 poslocal = transform.InverseTransformPoint(obj.transform.position+obj.transform.forward*longeurplayer-obj.transform.right*largeurplayer); 
+                //on prend la position du coin avant gauche joueur dans le repere du bot 
+                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                {
+                    
+                    hit	();//on detruit le bot
+                    obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
+                }
+                 poslocal = transform.InverseTransformPoint(obj.transform.position-obj.transform.forward*longeurplayer+obj.transform.right*largeurplayer); 
+                //on prend la position du coin arriere droite joueur dans le repere du bot 
+                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                {
+                    
+                    hit	();//on detruit le bot
+                    obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
+                }
+                 poslocal = transform.InverseTransformPoint(obj.transform.position-obj.transform.forward*longeurplayer-obj.transform.right*largeurplayer); 
+                //on prend la position du coin arriere gauche joueur dans le repere du bot 
+                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                {
+                    
+                    hit	();//on detruit le bot
+                    obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
                 }
             } 
         }
-        public void OnCollisionEnter(Collision other)
-        {
-            Debug.Log("hit");
-            
-            hit();
-            if (photonView.IsMine && other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
-            {
-                PhotonNetwork.Destroy(other.gameObject);//on detruit le laser
-                
-            }
-        }
-
         public void hit()
         {
             PhotonNetwork.Destroy(this.gameObject);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -23,7 +23,7 @@ namespace Com.MyCompany.MyGame
         [Tooltip("The Player's UI GameObject Prefab")]
         [SerializeField]
         public GameObject PlayerUiPrefab;
-
+        private GameManager game;
         public GameObject healthbar;
         public float playerSpeed;
         private int longeur = 15;
@@ -43,6 +43,7 @@ namespace Com.MyCompany.MyGame
             if (photonView.IsMine)
             {
                 PlayerManager.LocalPlayerInstance = this.gameObject;
+                game = GameObject.Find("Game Manager").GetComponent<GameManager>();
             }
             //DontDestroyOnLoad(this.gameObject);
 
@@ -85,7 +86,7 @@ namespace Com.MyCompany.MyGame
         /// </summary>
         void Update()
         {
-            if (photonView.IsMine)
+            if (photonView.IsMine && !game.paused)
             {
                 ProcessInputs ();
                 checkcollision();
@@ -171,13 +172,15 @@ namespace Com.MyCompany.MyGame
             GameObject[] lasers= GameObject.FindGameObjectsWithTag("Laser");
             foreach (GameObject obj in lasers)
             {
+                Laser laser = obj.GetComponent<Laser>();// sert à savoir si le laser n'a pas deja effectuer une collision
                 Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position); //on prend la position du laser dans le repere du joueur
-                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                if (!laser.destroy &&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
                     hit	();
                     obj.SendMessage	("Destroy");//on demande au laser de se detruire car on peut ne pas avoir les droit de le detruire
                 }
             } 
+
         }
 
 

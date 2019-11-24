@@ -8,10 +8,15 @@
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Realtime;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
+
 namespace Com.MyCompany.MyGame
 {
 	#pragma warning disable 649
@@ -22,7 +27,7 @@ namespace Com.MyCompany.MyGame
 	/// Deals with quiting the room and the game
 	/// Deals with level loading (outside the in room synchronization)
 	/// </summary>
-	public class GameManager : MonoBehaviourPunCallbacks
+	public class GameManager : MonoBehaviourPunCallbacks,IPunObservable
     {
 
 
@@ -37,6 +42,12 @@ namespace Com.MyCompany.MyGame
         private GameObject playerPrefab;
         [SerializeField]
         private GameObject iaPrefab;
+
+        public GameObject pausepanel;
+        public Text vague;
+        public bool paused=false;
+        public int nbvague=0;
+        
 
         
         /// <summary>
@@ -55,7 +66,7 @@ namespace Com.MyCompany.MyGame
 				if (PlayerManager.LocalPlayerInstance==null)
 				{
 					Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
-					//todo regler prob de multi spawn + aller faire la zone de jeu en z<0 sinon etiquette nom est visible *2(intrinseque fonctionnement)
+				
 					PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(Random.Range(-400,400),0,Random.Range(-300,300)), Quaternion.identity);
 					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
 					
@@ -67,14 +78,7 @@ namespace Com.MyCompany.MyGame
 				
 			}
 
-			if (PhotonNetwork.IsMasterClient)
-			{
-				for (int i = 0; i < 10; i++)
-				{
-					PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)),
-						Quaternion.identity);
-				}
-			}
+
 		
 		}
 
@@ -84,10 +88,29 @@ namespace Com.MyCompany.MyGame
 		/// </summary>
 		void Update()
 		{
+			pausepanel.SetActive(paused);
+			vague.text = "Wave " + nbvague;
 			// "back" button of phone equals "Escape". quit app if that's pressed
 			if (Input.GetKeyDown(KeyCode.Escape))
 			{
-				QuitApplication();
+				Debug.Log(photonView.Owner);
+				if (paused )
+				{
+					photonView.RPC("Continue", RpcTarget.All);
+				}
+				else
+				{
+					photonView.RPC("Pause", RpcTarget.All, photonView.Owner);
+				}
+			}
+			if (PhotonNetwork.IsMasterClient)
+			{
+				if (GameObject.FindGameObjectsWithTag("enemy").Length == 0
+				) //quand il n'y a plus d'ennemis on passe à la vague suivante
+				{
+					spawnVague();
+				}
+
 			}
 		}
 
@@ -106,7 +129,10 @@ namespace Com.MyCompany.MyGame
 		/// <param name="other">Other.</param>
 		public override void OnPlayerLeftRoom( Player other  )
 		{
-			//TODO destroy player
+			//TODO destroy player +transfer si master
+			// todo respawn
+			//todo healthbar
+			// todo doc + rapport agent , flot et ia 
 		}
 
 		/// <summary>
@@ -116,19 +142,90 @@ namespace Com.MyCompany.MyGame
 		{
 			SceneManager.LoadScene("Launcher");
 		}
-		
+
+		public IEnumerator  TransfertOwnership()
+		{
+			if (PhotonNetwork.PlayerList.Length > 0 )//pas besoin de transfert si on est le dernier joeur
+			{
+				Player master = PhotonNetwork.PlayerList[1];//le master est forcement le 1er de la liste 
+				if (PhotonNetwork.SetMasterClient(master)) //si le transfert marche 
+				{
+					GameObject[] lasers = GameObject.FindGameObjectsWithTag("Laser");
+					GameObject[] enemys = GameObject.FindGameObjectsWithTag("enemy");
+					foreach (GameObject laser in lasers)
+					{
+						if (laser.GetPhotonView().Owner.UserId==photonView.Owner.UserId)//si le laser appartient a l'ancien masterClient on le transfert 
+						{
+							laser.GetPhotonView().TransferOwnership(master);
+						}
+					}
+					foreach (GameObject enemy in enemys)
+					{
+						enemy.GetPhotonView().TransferOwnership(master);//les enemies appartiennent obligatoirement au master	
+					}
+					Debug.Log("wait");
+					yield return new WaitForSeconds(1);
+				}
+				
+			}
+			
+		}
 
 		public void LeaveRoom()
 		{
+			
+			if (PhotonNetwork.IsMasterClient)
+			{
+				TransfertOwnership();
+			}
 			PhotonNetwork.LeaveRoom();
 		}
 
 		public void QuitApplication()
 		{
+			if (PhotonNetwork.IsMasterClient)
+			{
+				TransfertOwnership();
+			}
+			
 			Application.Quit();
 		}
+		[PunRPC]//can be call by other client with message
+		public void Pause(Player player)
+		{
+			
+			paused = true;
+		}
 		
+		[PunRPC]
+		public void Continue()
+		{
+			paused = false;
+		}
 
-	}
+		private void spawnVague()
+		{
+			nbvague++;
+			
+			Debug.Log("vague"+nbvague);
+			int nbenemy = (int) ((Math.Pow(nbvague, 1.5) + nbvague) / 2);
+			for (int i = 0; i < nbenemy; i++)
+			{
+				PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)),
+					Quaternion.identity);
+			}
+		}
+		public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+		{
+			if(stream.IsWriting && PhotonNetwork.IsMasterClient)
+			{
+				stream.SendNext(nbvague);
+			}
+			else if (stream.IsReading && !PhotonNetwork.IsMasterClient)
+			{
+				nbvague = (int) stream.ReceiveNext();
+			}
+		}
+    }
 
 }
