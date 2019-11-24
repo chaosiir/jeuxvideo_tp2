@@ -137,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerUiPrefab: {fileID: 4401700424810425099, guid: 74edac1c7e755fa4e9cd56f0f50f0391,
     type: 3}
+  playerSpeed: 0
 --- !u!114 &-3843729115603409647
 MonoBehaviour:
   m_ObjectHideFlags: 0

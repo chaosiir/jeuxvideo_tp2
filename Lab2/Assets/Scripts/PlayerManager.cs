@@ -26,7 +26,7 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         public GameObject PlayerUiPrefab;
         
-        private float playerSpeed;
+        public float playerSpeed;
         private static float MAX_SPEED = 150.0f;
         private static float ACCEL = 50.0f;
 

@@ -25,7 +25,7 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.IsMasterClient)
             {
                 LocalPlayerInstance = this.gameObject;
-                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform);
+                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform, true);
             }
             //DontDestroyOnLoad(this.gameObject);
 

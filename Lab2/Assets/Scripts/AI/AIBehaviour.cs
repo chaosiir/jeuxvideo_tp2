@@ -10,10 +10,12 @@ namespace Com.MyCompany.MyGame.AI
         public static string PLAYER_TAG = "Player";
         public static float DETECTION_RANGE = 225f;
         public static float MINIMUM_POI_RANGE = 30f;
-        public static float MINIMUM_SHOOTING_RANGE = 100f;
+        public static float MINIMUM_SHOOTING_RANGE = 125f;
         public static float MINIMUM_PRECISION_ANGLE = 3.0f;
         public static float MINIMUM_CANNON_COOLDOWN = 1f;
+        public static float APPROXIMATION_FRONT_COEFFICIENT = 0.1f;
         
+        private static bool _isSharpshooter;
         private List<GameObject> _players;
         private Transform _current;
         private ActionState _actionState;
@@ -27,9 +29,10 @@ namespace Com.MyCompany.MyGame.AI
         public MovementRotationState _movementRotationState;
         public MovementTranslationState _movementTranslationState;
 
-        public AIBehaviour(Transform unit)
+        public AIBehaviour(Transform unit, bool isSharpshooter)
         {
             _current = unit;
+            _isSharpshooter = isSharpshooter;
             _players = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
             changeActionState(ActionState.WAITING);
             _movementRotationState = MovementRotationState.NONE;
@@ -55,7 +58,12 @@ namespace Com.MyCompany.MyGame.AI
             if (_actionState == ActionState.WANDERING) {
                 movementAdjustmentToObjective(_pointOfInterest, MINIMUM_POI_RANGE);
             } else if (_actionState == ActionState.APPROACHING || _actionState == ActionState.TARGETING) {
-                movementAdjustmentToObjective(_target.position, MINIMUM_SHOOTING_RANGE);
+                var target = _target.position;
+                if (_isSharpshooter)
+                {
+                    target = getFrontOfTarget(_target, _target.GetComponent<PlayerManager>().playerSpeed);
+                }
+                movementAdjustmentToObjective(target, MINIMUM_SHOOTING_RANGE);
                 if (_actionState == ActionState.TARGETING) {
                     if (_movementTranslationState == MovementTranslationState.FORWARD)
                     {
@@ -109,12 +117,15 @@ namespace Com.MyCompany.MyGame.AI
 
         private void resumeTargetingAction()
         {
-            // if aligned with the target, shoot!!!!!
-            if (_cannonCooldown <= 0f) {
-                if (isAligned(_target.position)) {
-                    _isFiring = true;
-                    _cannonCooldown = MINIMUM_CANNON_COOLDOWN;
-                }
+            if (_cannonCooldown > 0f) return;
+            
+            var target = _target.position;
+            if (_isSharpshooter) {
+                target = getFrontOfTarget(_target, _target.GetComponent<PlayerManager>().playerSpeed);
+            }
+            if (isAligned(target)) {
+                _isFiring = true;
+                _cannonCooldown = MINIMUM_CANNON_COOLDOWN;
             }
         }
 
@@ -168,8 +179,7 @@ namespace Com.MyCompany.MyGame.AI
         private void completeTargetingAction()
         {
             var targetDistance = Vector3.Distance(_current.position, _target.position);
-            if (targetDistance > DETECTION_RANGE)
-            {
+            if (targetDistance > DETECTION_RANGE) {
                 changeActionState(ActionState.WAITING);
                 _cooldownTime = Random.Range(1f, 3f);
             } else if (targetDistance > MINIMUM_SHOOTING_RANGE) {
@@ -184,8 +194,7 @@ namespace Com.MyCompany.MyGame.AI
         {
             var closestUnit = _current;
             var closestDistance = float.MaxValue;
-            foreach (var player in _players)
-            {
+            foreach (var player in _players) {
                 var playerTr = player.transform;
                 var playerDistance = Vector3.Distance(_current.position, playerTr.position);
                 if (playerDistance < DETECTION_RANGE) {
@@ -197,6 +206,8 @@ namespace Com.MyCompany.MyGame.AI
             }
             if (closestDistance != float.MaxValue) {
                 setTarget(closestUnit);
+            } else {
+                _targetActive = false;
             }
         }
 
@@ -249,9 +260,9 @@ namespace Com.MyCompany.MyGame.AI
             } else if (relativeAngle > 180) {
                 relativeAngle -= 360;
             }
-            if (relativeAngle > MINIMUM_PRECISION_ANGLE) {
+            if (relativeAngle > MINIMUM_PRECISION_ANGLE / 2) {
                 _movementRotationState = MovementRotationState.LEFT;
-            } else if (relativeAngle < -MINIMUM_PRECISION_ANGLE) {
+            } else if (relativeAngle < -MINIMUM_PRECISION_ANGLE / 2) {
                 _movementRotationState = MovementRotationState.RIGHT;
             } else {
                 _movementRotationState = MovementRotationState.NONE;
@@ -267,7 +278,13 @@ namespace Com.MyCompany.MyGame.AI
                 objective.x,
                 currentPosition.z,
                 objective.z);
-            return (relativeAngle - _current.rotation.eulerAngles.y < MINIMUM_PRECISION_ANGLE);
+            return (Math.Abs(relativeAngle - _current.rotation.eulerAngles.y) < MINIMUM_PRECISION_ANGLE);
+        }
+
+        private Vector3 getFrontOfTarget(Transform target, float speed)
+        {
+            var objectiveMovement = APPROXIMATION_FRONT_COEFFICIENT * speed * target.forward;
+            return target.position + objectiveMovement;
         }
 
         private void coolingDownCannon(float timelapse)
