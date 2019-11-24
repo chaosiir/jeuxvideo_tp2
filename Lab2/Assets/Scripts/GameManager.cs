@@ -62,7 +62,7 @@ namespace Com.MyCompany.MyGame
 				{
 					Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 					//todo regler prob de multi spawn + aller faire la zone de jeu en z<0 sinon etiquette nom est visible *2(intrinseque fonctionnement)
-					PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(Random.Range(-20,20),0,Random.Range(-20,20)), Quaternion.identity);
+					PhotonNetwork.Instantiate(playerPrefab.name, new Vector3(Random.Range(-400,400),0,Random.Range(-300,300)), Quaternion.identity);
 					// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
 					
 				}else{
@@ -77,7 +77,7 @@ namespace Com.MyCompany.MyGame
 			{
 				for (int i = 0; i < 4-PhotonNetwork.PlayerList.Length; i++)
 				{
-					PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)),
+					PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)),
 						Quaternion.identity);
 				}
 			}
@@ -148,13 +148,6 @@ namespace Com.MyCompany.MyGame
 
 		#endregion
 
-		private void buildEnemyWave()
-		{
-			for (var i = 0; i < 2; i++)
-			{
-				PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20)),
-					Quaternion.identity);
-			}
-		}
-    }
+	}
+
 }

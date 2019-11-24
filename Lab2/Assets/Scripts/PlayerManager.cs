@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 using System.Collections;
@@ -14,12 +14,9 @@ namespace Com.MyCompany.MyGame
     /// </summary>
     public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
-        #region Private Fields
-        
 
         //True, when the user is firing
         bool IsFiring;
-        #endregion
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
         [Tooltip("The Player's UI GameObject Prefab")]
@@ -30,7 +27,7 @@ namespace Com.MyCompany.MyGame
         private float playerSpeed;
         public float health=10;
         private static float MAX_SPEED = 150.0f;
-        private static float ACCEL = 50.0f;
+        private static float ACCEL = 5f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
@@ -88,7 +85,9 @@ namespace Com.MyCompany.MyGame
         
         public void OnCollisionEnter(Collision other)
         {
-            this.hit();
+            Debug.Log("hit");
+
+            hit();
             if (photonView.IsMine && other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
             {
                 PhotonNetwork.Destroy(other.gameObject);//on detruit le laser
@@ -99,6 +98,7 @@ namespace Com.MyCompany.MyGame
         public void hit()
         {
             health--;
+            
             healthbar.SendMessage("Update_health", this, SendMessageOptions.RequireReceiver);
         }
 
@@ -112,7 +112,7 @@ namespace Com.MyCompany.MyGame
             {
                 if (playerSpeed < MAX_SPEED)
                 {
-                    playerSpeed += ACCEL * Time.deltaTime;
+                    playerSpeed += ACCEL;
                     
                 }
             }
@@ -120,7 +120,7 @@ namespace Com.MyCompany.MyGame
             {
                 if (playerSpeed > -(MAX_SPEED))
                 {
-                    playerSpeed -= ACCEL * Time.deltaTime;
+                    playerSpeed -= ACCEL;
                     
                 }
             }
@@ -149,12 +149,12 @@ namespace Com.MyCompany.MyGame
         {
             if (stream.IsWriting)
             {
-                
+                stream.SendNext(health);
                 
             }
             else
             {
-                
+                this.health = (float) stream.ReceiveNext();
             }
         }
 
