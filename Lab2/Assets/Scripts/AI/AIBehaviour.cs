@@ -12,6 +12,7 @@ namespace Com.MyCompany.MyGame.AI
         public static float MINIMUM_POI_RANGE = 30f;
         public static float MINIMUM_SHOOTING_RANGE = 100f;
         public static float MINIMUM_PRECISION_ANGLE = 3.0f;
+        public static float MINIMUM_CANNON_COOLDOWN = 1f;
         
         private List<GameObject> _players;
         private Transform _current;
@@ -20,7 +21,9 @@ namespace Com.MyCompany.MyGame.AI
         private Transform _target;
         private bool _targetActive;
         private float _cooldownTime;
-
+        private float _cannonCooldown;
+        
+        public bool _isFiring;
         public MovementRotationState _movementRotationState;
         public MovementTranslationState _movementTranslationState;
 
@@ -33,6 +36,8 @@ namespace Com.MyCompany.MyGame.AI
             _movementTranslationState = MovementTranslationState.NONE;
             _targetActive = false;
             _cooldownTime = 0f;
+            _isFiring = false;
+            _cannonCooldown = 0f;
             _pointOfInterest = _current.position;
         }
 
@@ -40,6 +45,7 @@ namespace Com.MyCompany.MyGame.AI
         public void update()
         {
             var timelapse = Time.deltaTime; 
+            coolingDownCannon(timelapse);
             playStateAction(timelapse);
             updateMovementState(timelapse);
         }
@@ -104,6 +110,12 @@ namespace Com.MyCompany.MyGame.AI
         private void resumeTargetingAction()
         {
             // if aligned with the target, shoot!!!!!
+            if (_cannonCooldown <= 0f) {
+                if (isAligned(_target.position)) {
+                    _isFiring = true;
+                    _cannonCooldown = MINIMUM_CANNON_COOLDOWN;
+                }
+            }
         }
 
         private void completeStateAction()
@@ -245,6 +257,25 @@ namespace Com.MyCompany.MyGame.AI
                 _movementRotationState = MovementRotationState.NONE;
             }
             return relativeAngle;
+        }
+
+        private bool isAligned(Vector3 objective)
+        {
+            var currentPosition = _current.position;
+            var relativeAngle = Util.angleBetweenVec(
+                currentPosition.x,
+                objective.x,
+                currentPosition.z,
+                objective.z);
+            return (relativeAngle - _current.rotation.eulerAngles.y < MINIMUM_PRECISION_ANGLE);
+        }
+
+        private void coolingDownCannon(float timelapse)
+        {
+            if (_cannonCooldown > 0)
+            {
+                _cannonCooldown -= timelapse;
+            }
         }
 
         private void translationToObjective(Vector3 objective, double relativeAngle, float minDistance)
