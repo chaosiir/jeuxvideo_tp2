@@ -14,10 +14,7 @@ namespace Com.MyCompany.MyGame
         private static float ROTATION_SPEED = 70.0f;
         
         private GameObject LocalPlayerInstance;
-        
-        //[SerializeField]
-        //public GameObject PlayerUiPrefab;
-        
+
         private bool IsFiring;
         private float _speed;
         private int longeur=11;
@@ -30,11 +27,7 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.IsMasterClient)
             {
                 LocalPlayerInstance = this.gameObject;
-<<<<<<< Updated upstream
                 _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform, isSharpshooter);
-=======
-                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform,true);
->>>>>>> Stashed changes
             }
             //DontDestroyOnLoad(this.gameObject);
 
@@ -95,8 +88,9 @@ namespace Com.MyCompany.MyGame
         /// <param name="other">Other.</param>
         public override void OnPlayerLeftRoom( Player other  )
         {
-            //_aiBehaviour.removePlayer(other);
-            //TODO destroy + remplacer par ia si vivant
+            Debug.Log("Player unsynchronisation");
+            
+            _aiBehaviour.unsyncPlayer();
         }
 
         void ProcessInputs()
@@ -129,6 +123,20 @@ namespace Com.MyCompany.MyGame
             } else if (_aiBehaviour._movementRotationState == MovementRotationState.RIGHT) {
                 LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
             }
+
+            if (_aiBehaviour._isFiring)
+            {
+                _aiBehaviour._isFiring = false;
+                PhotonNetwork.Instantiate("Laser", transform.position + 20 * transform.forward, transform.rotation);
+            }
+            
+        }
+
+        public void syncPlayer()
+        {
+            Debug.Log("Player synchronisation:");
+            _aiBehaviour.syncPlayer();
+            Debug.Log("Synchronisation completed");
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

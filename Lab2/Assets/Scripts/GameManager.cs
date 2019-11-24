@@ -69,7 +69,7 @@ namespace Com.MyCompany.MyGame
 
 			if (PhotonNetwork.IsMasterClient)
 			{
-				for (int i = 0; i < 40; i++)
+				for (int i = 0; i < 10; i++)
 				{
 					PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)),
 						Quaternion.identity);

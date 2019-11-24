@@ -334,6 +334,30 @@ namespace Com.MyCompany.MyGame.AI
             //Debug.LogFormat("New state selected: {0}", newState.ToString());
         }
 
+        public void syncPlayer()
+        {
+            var players  = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
+            foreach (var player in players) {
+                if (!_players.Contains(player)) {
+                    _players.Add(player);
+                    Debug.Log("New player added");
+                    Debug.LogFormat("Number of players found: {0}", _players.Count);
+                }
+            }
+        }
+
+        public void unsyncPlayer()
+        {
+            var remainingPlayers  = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
+            foreach (var player in _players) {
+                if (!remainingPlayers.Contains(player)) {
+                    removePlayer(player);
+                    Debug.Log("Player unsynced");
+                    Debug.LogFormat("Number of players found: {0}", _players.Count);
+                }
+            }
+        }
+
         public void removePlayer(GameObject player)
         {
             _players.Remove(player);
