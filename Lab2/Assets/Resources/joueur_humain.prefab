@@ -141,7 +141,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerUiPrefab: {fileID: 4401700424810425099, guid: 74edac1c7e755fa4e9cd56f0f50f0391,
     type: 3}
-  playerSpeed: 0
+  healthbar: {fileID: 8531397799331485151, guid: d4b590bf89d55de4eadd4baae4f9e643,
+    type: 3}
   health: 10
 --- !u!114 &-3843729115603409647
 MonoBehaviour:
@@ -491,7 +492,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4298932653388924375}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.1, y: 0.5918255, z: -5.4}
+  m_LocalPosition: {x: -1.33, y: 0.5918255, z: -4.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 434263979022518044}

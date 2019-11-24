@@ -16,7 +16,10 @@ namespace Com.MyCompany.MyGame
         //[SerializeField]
         //public GameObject PlayerUiPrefab;
         
+        private bool IsFiring;
         private float _speed;
+        private int longeur=11;
+        private int largeur=7;
         
         private AIBehaviour _aiBehaviour;
         
@@ -47,9 +50,39 @@ namespace Com.MyCompany.MyGame
             {
                 _aiBehaviour.update();
                 ProcessInputs();
+                checkcollision();
             }
         }
 
+        public void checkcollision()//les colliders ne trouvent pas les collisions donc on les tests manuellement
+        {
+            GameObject[] lasers= GameObject.FindGameObjectsWithTag("Laser");
+            foreach (GameObject obj in lasers)
+            {
+                Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position); //on prend la position du laser dans le repere du bot
+                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                {
+                    hit	();
+                    PhotonNetwork.Destroy(obj);
+                }
+            } 
+        }
+        public void OnCollisionEnter(Collision other)
+        {
+            Debug.Log("hit");
+            
+            hit();
+            if (photonView.IsMine && other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
+            {
+                PhotonNetwork.Destroy(other.gameObject);//on detruit le laser
+                
+            }
+        }
+
+        public void hit()
+        {
+            PhotonNetwork.Destroy(this.gameObject);
+        }
         /// <summary>
         /// Called when a Photon Player got disconnected. We need to load a smaller scene.
         /// </summary>
@@ -89,11 +122,6 @@ namespace Com.MyCompany.MyGame
                 LocalPlayerInstance.transform.Rotate(0,ROTATION_SPEED * Time.deltaTime,0);
             } else if (_aiBehaviour._movementRotationState == MovementRotationState.RIGHT) {
                 LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
-            }
-
-            if (_aiBehaviour._isFiring) {
-                PhotonNetwork.Instantiate("Laser", transform.position + 20 * transform.forward, transform.rotation);
-                _aiBehaviour._isFiring = false;
             }
         }
 

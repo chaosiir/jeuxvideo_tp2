@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,8 +24,10 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         public GameObject PlayerUiPrefab;
 
-        private GameObject healthbar;
-        public float playerSpeed;
+        public GameObject healthbar;
+        private float playerSpeed;
+        private int longeur = 15;
+        private int largeur = 10;
         public float health=10;
         private static float MAX_SPEED = 150.0f;
         private static float ACCEL = 80.0f;
@@ -48,9 +50,9 @@ namespace Com.MyCompany.MyGame
             {
                 GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
-                healthbar=GameObject.Find("healthbar");
-                healthbar.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+                Instantiate(healthbar).SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
             }
+
         }
         void Start()
         {
@@ -79,6 +81,7 @@ namespace Com.MyCompany.MyGame
             if (photonView.IsMine)
             {
                 ProcessInputs ();
+                checkcollision();
             }
 
         }
@@ -135,7 +138,7 @@ namespace Com.MyCompany.MyGame
             {
                 LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
             }
-            
+
             
             if (Input.GetKeyDown(controlKeys["Fire1"]))
             {
@@ -143,8 +146,20 @@ namespace Com.MyCompany.MyGame
             }
             
         }
-        
-        
+
+        public void checkcollision()//les colliders ne trouvent pas les collisions donc on les tests manuellement
+        {
+            GameObject[] lasers= GameObject.FindGameObjectsWithTag("Laser");
+            foreach (GameObject obj in lasers)
+            {
+                Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position); //on prend la position du laser dans le repere du joueur
+                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                {
+                    hit	();
+                    PhotonNetwork.Destroy(obj);
+                }
+            } 
+        }
 
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

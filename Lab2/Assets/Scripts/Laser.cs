@@ -31,5 +31,11 @@ public class Laser : MonoBehaviourPunCallbacks
         
     }
 
+    public void OnCollisionEnter(Collision other)
+    {
+        Debug.Log("hit");
+
+        other.gameObject.SendMessage("hit");
+    }
 
 }
