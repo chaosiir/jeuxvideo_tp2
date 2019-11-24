@@ -49,7 +49,8 @@ namespace Com.MyCompany.MyGame
             {
                 GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
-                Instantiate(healthbar).SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
+                healthbar = Instantiate(this.healthbar);
+                healthbar.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
             }
 
         }
@@ -104,7 +105,8 @@ namespace Com.MyCompany.MyGame
         {
             health--;
             
-            healthbar.SendMessage("Update_health", this, SendMessageOptions.RequireReceiver);
+            //healthbar.Update_health();
+            healthbar.SendMessage("Update_health");
         }
 
         /// <summary>
