@@ -34,7 +34,6 @@ namespace Com.MyCompany.MyGame.AI
             _current = unit;
             _isSharpshooter = isSharpshooter;
             _players = new List<GameObject>(GameObject.FindGameObjectsWithTag(PLAYER_TAG));
-            Debug.LogFormat("Number of players found: {0}", _players.Count);
             changeActionState(ActionState.WAITING);
             _movementRotationState = MovementRotationState.NONE;
             _movementTranslationState = MovementTranslationState.NONE;
