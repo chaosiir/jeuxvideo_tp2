@@ -16,7 +16,6 @@ namespace Com.MyCompany.MyGame
         //[SerializeField]
         //public GameObject PlayerUiPrefab;
         
-        private bool IsFiring;
         private float _speed;
         
         private AIBehaviour _aiBehaviour;
@@ -90,6 +89,11 @@ namespace Com.MyCompany.MyGame
                 LocalPlayerInstance.transform.Rotate(0,ROTATION_SPEED * Time.deltaTime,0);
             } else if (_aiBehaviour._movementRotationState == MovementRotationState.RIGHT) {
                 LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
+            }
+
+            if (_aiBehaviour._isFiring) {
+                PhotonNetwork.Instantiate("Laser", transform.position + 20 * transform.forward, transform.rotation);
+                _aiBehaviour._isFiring = false;
             }
         }
 
