@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -27,7 +28,7 @@ namespace Com.MyCompany.MyGame
         public float playerSpeed;
         public float health=10;
         private static float MAX_SPEED = 150.0f;
-        private static float ACCEL = 50.0f;
+        private static float ACCEL = 80.0f;
         private static float ROTATION_SPEED = 100.0f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
@@ -119,7 +120,7 @@ namespace Com.MyCompany.MyGame
             }
             else if (Input.GetKey(controlKeys["Down1"]))
             {
-                if (playerSpeed > -(MAX_SPEED))
+                if (playerSpeed > -(MAX_SPEED * 0.6))
                 {
                     playerSpeed -= ACCEL * Time.deltaTime;
                     
@@ -132,7 +133,7 @@ namespace Com.MyCompany.MyGame
             }
             if (Input.GetKey(controlKeys["Left1"]))
             {
-                LocalPlayerInstance.transform.Rotate(0,-2,0);
+                LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
             }
             
             

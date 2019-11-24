@@ -8,12 +8,12 @@ namespace Com.MyCompany.MyGame.AI
     public class AIBehaviour
     {
         public static string PLAYER_TAG = "Player";
-        public static float DETECTION_RANGE = 225f;
+        public static float DETECTION_RANGE = 200f;
         public static float MINIMUM_POI_RANGE = 30f;
         public static float MINIMUM_SHOOTING_RANGE = 125f;
         public static float MINIMUM_PRECISION_ANGLE = 3.0f;
         public static float MINIMUM_CANNON_COOLDOWN = 1f;
-        public static float APPROXIMATION_FRONT_COEFFICIENT = 0.1f;
+        public static float APPROXIMATION_FRONT_COEFFICIENT = 0.25f;
         
         private static bool _isSharpshooter;
         private List<GameObject> _players;
@@ -227,7 +227,7 @@ namespace Com.MyCompany.MyGame.AI
         private Vector3 generatePointOfInterest()
         {
             float distance = Random.Range(DETECTION_RANGE % 2, DETECTION_RANGE);
-            int degreeVariation = Random.Range(-135, 135);
+            int degreeVariation = Random.Range(-90, 90);
             var currentPosition = _current.position;
             var orientation = Util.toRad(_current.eulerAngles.y + degreeVariation);
             return new Vector3(
@@ -331,7 +331,7 @@ namespace Com.MyCompany.MyGame.AI
         private void changeActionState(ActionState newState)
         {
             _actionState = newState;
-            Debug.LogFormat("New state selected: {0}", newState.ToString());
+            //Debug.LogFormat("New state selected: {0}", newState.ToString());
         }
 
         public void removePlayer(GameObject player)

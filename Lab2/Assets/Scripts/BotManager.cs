@@ -8,7 +8,7 @@ namespace Com.MyCompany.MyGame
     public class BotManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         private static float MAX_SPEED = 120.0f;
-        private static float TRANSLATION_ACCELERATION = 30.0f;
+        private static float TRANSLATION_ACCELERATION = 60.0f;
         private static float ROTATION_SPEED = 70.0f;
         
         private GameObject LocalPlayerInstance;
