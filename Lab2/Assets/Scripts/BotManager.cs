@@ -10,7 +10,7 @@ namespace Com.MyCompany.MyGame
         public bool isSharpshooter = true;
         
         private static float MAX_SPEED = 120.0f;
-        private static float TRANSLATION_ACCELERATION = 60.0f;
+        private static float TRANSLATION_ACCELERATION = 30.0f;
         private static float ROTATION_SPEED = 70.0f;
         
         private GameObject LocalPlayerInstance;
@@ -30,7 +30,11 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.IsMasterClient)
             {
                 LocalPlayerInstance = this.gameObject;
+<<<<<<< Updated upstream
                 _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform, isSharpshooter);
+=======
+                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform,true);
+>>>>>>> Stashed changes
             }
             //DontDestroyOnLoad(this.gameObject);
 
@@ -65,7 +69,7 @@ namespace Com.MyCompany.MyGame
                 if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
                     hit	();
-                    PhotonNetwork.Destroy(obj);
+                    obj.SendMessage	("Destroy");//on demande au laser de se detruire car on peut ne pas avoir les droit de le detruire
                 }
             } 
         }

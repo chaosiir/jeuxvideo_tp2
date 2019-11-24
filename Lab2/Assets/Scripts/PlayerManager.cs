@@ -30,8 +30,7 @@ namespace Com.MyCompany.MyGame
         private int largeur = 10;
         public float health=10;
         private static float MAX_SPEED = 150.0f;
-        private static float ACCEL = 80.0f;
-        private static float ROTATION_SPEED = 100.0f;
+        private static float ACCEL = 100f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
@@ -124,7 +123,7 @@ namespace Com.MyCompany.MyGame
             }
             else if (Input.GetKey(controlKeys["Down1"]))
             {
-                if (playerSpeed > -(MAX_SPEED * 0.6))
+                if (playerSpeed > -(MAX_SPEED))
                 {
                     playerSpeed -= ACCEL * Time.deltaTime;
                     
@@ -144,11 +143,11 @@ namespace Com.MyCompany.MyGame
             LocalPlayerInstance.transform.Translate(0, 0, playerSpeed * Time.deltaTime);
             if (Input.GetKey(controlKeys["Right1"]))
             {
-                LocalPlayerInstance.transform.Rotate(0,ROTATION_SPEED * Time.deltaTime,0);
+                LocalPlayerInstance.transform.Rotate(0,2,0);
             }
             if (Input.GetKey(controlKeys["Left1"]))
             {
-                LocalPlayerInstance.transform.Rotate(0,-ROTATION_SPEED * Time.deltaTime,0);
+                LocalPlayerInstance.transform.Rotate(0,-2,0);
             }
 
             
@@ -168,7 +167,7 @@ namespace Com.MyCompany.MyGame
                 if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
                     hit	();
-                    PhotonNetwork.Destroy(obj);
+                    obj.SendMessage	("Destroy");//on demande au laser de se detruire car on peut ne pas avoir les droit de le detruire
                 }
             } 
         }

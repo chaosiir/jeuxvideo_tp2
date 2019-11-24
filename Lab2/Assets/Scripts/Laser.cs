@@ -11,6 +11,8 @@ public class Laser : MonoBehaviourPunCallbacks
     private int largeur=500;
     private int hauteur=350;
     private BoxCollider hitbox;
+    private bool destroy=false;//va servir à savoir quand on doit detruire le laser car comme tout le monde n'as pas le droit d'appeler destroy sur cet objet (il faut etre mastreclient ou
+                               //proprietaire de cet objet, on leur fait alors changer ce booleen
     void Start()
     {
         hitbox = GetComponent<BoxCollider>();
@@ -21,21 +23,23 @@ public class Laser : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
+            if (destroy)
+            {PhotonNetwork.Destroy(this.gameObject);
+                
+            }
             transform.Translate	(speed*Time.deltaTime*Vector3.forward);
             if (transform.position.x < -largeur || transform.position.x > largeur || transform.position.z < -hauteur ||
                 transform.position.z > hauteur)//lorsque le laser sort de l'arene on lui laisse un peut de marge puis on le supprime 
             {
-               PhotonNetwork.Destroy(this.gameObject);
+                PhotonNetwork.Destroy(this.gameObject);
             }
         }
         
     }
 
-    public void OnCollisionEnter(Collision other)
+    public void Destroy()//va servir à detruire le laser à la prochaine update de celui-ci
     {
-        Debug.Log("hit");
-
-        other.gameObject.SendMessage("hit");
+        destroy = true;
     }
 
 }

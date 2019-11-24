@@ -143,6 +143,7 @@ MonoBehaviour:
     type: 3}
   healthbar: {fileID: 8531397799331485151, guid: d4b590bf89d55de4eadd4baae4f9e643,
     type: 3}
+  playerSpeed: 0
   health: 10
 --- !u!114 &-3843729115603409647
 MonoBehaviour:
