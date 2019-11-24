@@ -11,7 +11,7 @@ public class ControlSetting : MonoBehaviour
 
     private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
-    public Text Up1, Down1, Left1, Right1, Fire1;
+    public Text Up1, Down1, Left1, Right1, Slow1, Fire1;
     
     private Color32 defaultColor = new Color32(255,255,255,255);
     private Color32 selectedColor = new Color32(255,127,0,255);
@@ -23,12 +23,15 @@ public class ControlSetting : MonoBehaviour
         controlKeys.Add("Down1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Down1","S")));
         controlKeys.Add("Left1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left1","A")));
         controlKeys.Add("Right1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right1","D")));
+        controlKeys.Add("Slow1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Slow1","Left Shift")));
         controlKeys.Add("Fire1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Fire1","Space")));
+
 
         Up1.text = controlKeys["Up1"].ToString();
         Down1.text = controlKeys["Down1"].ToString();
         Left1.text = controlKeys["Left1"].ToString();
         Right1.text = controlKeys["Right1"].ToString();
+        Slow1.text = controlKeys["Slow1"].ToString();
         Fire1.text = controlKeys["Fire1"].ToString();
     }
 

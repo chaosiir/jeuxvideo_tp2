@@ -61,6 +61,7 @@ namespace Com.MyCompany.MyGame
             controlKeys.Add("Down1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Down1","S")));
             controlKeys.Add("Left1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Left1","A")));
             controlKeys.Add("Right1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Right1","D")));
+            controlKeys.Add("Slow1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Slow1","LeftShift")));
             controlKeys.Add("Fire1", (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("Fire1","Space")));
             
             if (_cameraWork != null)
@@ -124,6 +125,17 @@ namespace Com.MyCompany.MyGame
                 {
                     playerSpeed -= ACCEL * Time.deltaTime;
                     
+                }
+            }
+            else if (Input.GetKey(controlKeys["Slow1"]))
+            {
+                if (playerSpeed > 0)
+                {
+                    playerSpeed = Math.Max(playerSpeed - ACCEL * Time.deltaTime, 0);
+                }
+                else if (playerSpeed < 0)
+                {
+                    playerSpeed = Math.Min(playerSpeed + ACCEL * Time.deltaTime, 0);
                 }
             }
             LocalPlayerInstance.transform.Translate(0, 0, playerSpeed * Time.deltaTime);
