@@ -29,6 +29,7 @@ namespace Com.MyCompany.MyGame
         public float playerSpeed;
         private static float MAX_SPEED = 150.0f;
         private static float ACCEL = 50.0f;
+        private static float ROTATION_SPEED = 100.0f;
 
         private Dictionary<string, KeyCode> controlKeys = new Dictionary<string, KeyCode>();
 
@@ -121,7 +122,7 @@ namespace Com.MyCompany.MyGame
             LocalPlayerInstance.transform.Translate(0, 0, playerSpeed * Time.deltaTime);
             if (Input.GetKey(controlKeys["Right1"]))
             {
-                LocalPlayerInstance.transform.Rotate(0,2,0);
+                LocalPlayerInstance.transform.Rotate(0,ROTATION_SPEED * Time.deltaTime,0);
             }
             if (Input.GetKey(controlKeys["Left1"]))
             {

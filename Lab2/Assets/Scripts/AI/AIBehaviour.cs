@@ -113,6 +113,19 @@ namespace Com.MyCompany.MyGame.AI
             if (Vector3.Distance(_current.position, _target.position) < MINIMUM_SHOOTING_RANGE) {
                 _cooldownTime = 0f;
             }
+            else
+            {
+                if (_cannonCooldown > 0f) return;
+            
+                var target = _target.position;
+                if (_isSharpshooter) {
+                    target = getFrontOfTarget(_target, _target.GetComponent<PlayerManager>().playerSpeed);
+                }
+                if (isAligned(target)) {
+                    _isFiring = true;
+                    _cannonCooldown = MINIMUM_CANNON_COOLDOWN * 3;
+                }
+            }
         }
 
         private void resumeTargetingAction()
@@ -278,7 +291,14 @@ namespace Com.MyCompany.MyGame.AI
                 objective.x,
                 currentPosition.z,
                 objective.z);
-            return (Math.Abs(relativeAngle - _current.rotation.eulerAngles.y) < MINIMUM_PRECISION_ANGLE);
+
+            var angleDifference = relativeAngle - _current.rotation.eulerAngles.y;
+            if (angleDifference < -180) {
+                angleDifference += 360;
+            } else if (angleDifference > 180) {
+                angleDifference -= 360;
+            }
+            return (Math.Abs(angleDifference) < MINIMUM_PRECISION_ANGLE);
         }
 
         private Vector3 getFrontOfTarget(Transform target, float speed)
