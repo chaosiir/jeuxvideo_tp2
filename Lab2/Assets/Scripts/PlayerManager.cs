@@ -25,7 +25,7 @@ namespace Com.MyCompany.MyGame
         public GameObject PlayerUiPrefab;
 
         public GameObject healthbar;
-        private float playerSpeed;
+        public float playerSpeed;
         private int longeur = 15;
         private int largeur = 10;
         public float health=10;

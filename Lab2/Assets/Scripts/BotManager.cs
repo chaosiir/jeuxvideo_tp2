@@ -7,6 +7,8 @@ namespace Com.MyCompany.MyGame
 {
     public class BotManager : MonoBehaviourPunCallbacks, IPunObservable
     {
+        public bool isSharpshooter = true;
+        
         private static float MAX_SPEED = 120.0f;
         private static float TRANSLATION_ACCELERATION = 60.0f;
         private static float ROTATION_SPEED = 70.0f;
@@ -28,7 +30,7 @@ namespace Com.MyCompany.MyGame
             if (PhotonNetwork.IsMasterClient)
             {
                 LocalPlayerInstance = this.gameObject;
-                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform, true);
+                _aiBehaviour = new AIBehaviour(LocalPlayerInstance.transform, isSharpshooter);
             }
             //DontDestroyOnLoad(this.gameObject);
 
