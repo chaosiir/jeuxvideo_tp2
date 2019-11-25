@@ -146,23 +146,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 	/// </summary>
 	public override void OnLeftRoom()
 	{
-		SceneManager.LoadScene("Launcher");
+		SceneManager.LoadScene("Launcher");//on repart à l'ecran d'acceuil
 	}
 
 
-
+	//appelé par le bouton LeaveRoom
 	public void LeaveRoom()
 	{
 		PhotonNetwork.LeaveRoom();
 	}
-
+	//appelé par le bouton Quit
 	public void QuitApplication()
 	{
 
 		Application.Quit();
 	}
 
-	[PunRPC] //can be call by other client with message
+	[PunRPC] //permet d'etre appelé par d'autre utilisateur que le local
 	public void Pause()
 	{
 
@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	private void gameOver()
 	{
-		gopanel.SetActive(true);
+		gopanel.SetActive(true);//on affiche juste le panel de gameOver
 	}
 
 	private void spawnVague()
@@ -185,10 +185,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 		nbvague++;
 
 		Debug.Log("vague" + nbvague);
-		int nbenemy = (int) ((Math.Pow(nbvague, 1.5) + nbvague) / 2);
+		int nbenemy = (int) ((Math.Pow(nbvague, 1.5) + nbvague) / 2);//fonction pour augmenter d'un peu plus qu'en lineaire
 		for (int i = 0; i < nbenemy; i++)
 		{
-			PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)),
+			PhotonNetwork.Instantiate(iaPrefab.name, new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)),//instancie nbenemie aleatoirement dans l'arene
 				Quaternion.identity);
 		}
 	}
@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 	{
 		if (stream.IsWriting && PhotonNetwork.IsMasterClient)
 		{
-			stream.SendNext(nbvague);
+			stream.SendNext(nbvague);//seul le MasterClient peut modifier le nbvague , il le  transmet au autre joueurs
 		}
 		else if (stream.IsReading && !PhotonNetwork.IsMasterClient)
 		{
