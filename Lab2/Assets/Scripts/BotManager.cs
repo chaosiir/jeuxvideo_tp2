@@ -13,7 +13,7 @@ namespace Com.MyCompany.MyGame
         
         private GameObject LocalPlayerInstance;
         public GameManager game;
-        
+        public bool isSharpshooter = true;
         //[SerializeField]
         //public GameObject PlayerUiPrefab;
         
@@ -66,11 +66,11 @@ namespace Com.MyCompany.MyGame
             {
                 Laser laser = obj.GetComponent<Laser>();// sert à savoir si le laser n'a pas deja effectuer une collision
                 Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position); //on prend la position du laser dans le repere du bot
-                if (!laser.destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                if (!laser.destroy&&!destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
-                    
+                    destroy = true;
                     hit	();
-                    PhotonNetwork.Destroy(obj);//on detruit le laser
+                    obj.SendMessage	("Destroy");//on detruit le laser
 
                 }
             } 
@@ -79,33 +79,33 @@ namespace Com.MyCompany.MyGame
             {
                 Vector3 poslocal = transform.InverseTransformPoint(obj.transform.position+obj.transform.forward*longeurplayer+obj.transform.right*largeurplayer); 
                 //on prend la position du coin avant droite joueur dans le repere du bot 
-                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                if (!!destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
-                    
+                    destroy = true;
                     hit	();//on detruit le bot
                     obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
                 }
                  poslocal = transform.InverseTransformPoint(obj.transform.position+obj.transform.forward*longeurplayer-obj.transform.right*largeurplayer); 
                 //on prend la position du coin avant gauche joueur dans le repere du bot 
-                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                if (!destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
-                    
+                    destroy = true;
                     hit	();//on detruit le bot
                     obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
                 }
                  poslocal = transform.InverseTransformPoint(obj.transform.position-obj.transform.forward*longeurplayer+obj.transform.right*largeurplayer); 
                 //on prend la position du coin arriere droite joueur dans le repere du bot 
-                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                if (!destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
-                    
+                    destroy = true;
                     hit	();//on detruit le bot
                     obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
                 }
                  poslocal = transform.InverseTransformPoint(obj.transform.position-obj.transform.forward*longeurplayer-obj.transform.right*largeurplayer); 
                 //on prend la position du coin arriere gauche joueur dans le repere du bot 
-                if (poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
+                if (!destroy&&poslocal.x < largeur && poslocal.x > -largeur && poslocal.z < longeur && poslocal.z > -longeur)
                 {
-                    
+                    destroy = true;
                     hit	();//on detruit le bot
                     obj.SendMessage	("hit");//on envoi au joueur comme quoi il s'est fait toucher
                 }

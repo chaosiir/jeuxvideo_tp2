@@ -44,6 +44,7 @@ namespace Com.MyCompany.MyGame
         private GameObject iaPrefab;
 
         public GameObject pausepanel;
+        public GameObject gopanel;
         public Text vague;
         public bool paused=false;
         public int nbvague=0;
@@ -130,8 +131,6 @@ namespace Com.MyCompany.MyGame
 		public override void OnPlayerLeftRoom( Player other  )
 		{
 			//TODO destroy player +transfer si master
-			// todo respawn
-			//todo healthbar
 			// todo doc + rapport agent , flot et ia 
 		}
 
@@ -203,6 +202,10 @@ namespace Com.MyCompany.MyGame
 			paused = false;
 		}
 
+		private void gameOver()
+		{
+			gopanel.SetActive(true);
+		}
 		private void spawnVague()
 		{
 			nbvague++;

@@ -1,11 +1,9 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
-using Photon.Realtime;
+using Random = System.Random;
 
 namespace Com.MyCompany.MyGame
 {
@@ -29,6 +27,7 @@ namespace Com.MyCompany.MyGame
         private int longeur = 15;
         private int largeur = 10;
         public float health=10;
+        public float timerespawn=10;
         private static float MAX_SPEED = 150.0f;
         private static float ACCEL = 100f;
         private static float ROTATION_SPEED = 100.0f;
@@ -44,6 +43,8 @@ namespace Com.MyCompany.MyGame
             {
                 PlayerManager.LocalPlayerInstance = this.gameObject;
                 game = GameObject.Find("Game Manager").GetComponent<GameManager>();
+                healthbar = Instantiate(this.healthbar);
+                healthbar.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
             }
             //DontDestroyOnLoad(this.gameObject);
 
@@ -51,10 +52,9 @@ namespace Com.MyCompany.MyGame
             {
                 GameObject _uiGo = Instantiate(this.PlayerUiPrefab);
                 _uiGo.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
-                healthbar = Instantiate(this.healthbar);
-                healthbar.SendMessage("SetTarget", this, SendMessageOptions.RequireReceiver);
                 
-                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("enemy");
                 foreach (GameObject enemy in enemies) {
                         enemy.SendMessage("syncPlayer"); // s'assure que les bots sont synchronisé avec le joueur
                 }
@@ -88,6 +88,7 @@ namespace Com.MyCompany.MyGame
         {
             if (photonView.IsMine && !game.paused)
             {
+
                 ProcessInputs ();
                 checkcollision();
             }
@@ -95,25 +96,15 @@ namespace Com.MyCompany.MyGame
         }
 
         
-        
-        public void OnCollisionEnter(Collision other)
-        {
-            Debug.Log("hit");
-
-            hit();
-            if (photonView.IsMine && other.gameObject.tag.Equals("laser"))//si on se fait toucher par un laser
-            {
-                PhotonNetwork.Destroy(other.gameObject);//on detruit le laser
-                
-            }
-        }
 
         public void hit()
         {
             health--;
-            
-            //healthbar.Update_health();
-            healthbar.SendMessage("Update_health");
+            if (health <= 0)
+            {
+                game.SendMessage("gameOver");
+                PhotonNetwork.Destroy(this.gameObject);
+            }
         }
 
         /// <summary>

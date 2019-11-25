@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game: {fileID: 0}
-  destroy: 0
   isSharpshooter: 1
+  destroy: 0
 --- !u!114 &-2751321298257760828
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -145,6 +145,7 @@ MonoBehaviour:
     type: 3}
   playerSpeed: 0
   health: 10
+  timerespawn: 10
 --- !u!114 &-3843729115603409647
 MonoBehaviour:
   m_ObjectHideFlags: 0

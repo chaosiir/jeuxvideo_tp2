@@ -29,7 +29,10 @@ public class Laser : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine && !game.paused)
         {
-            
+            if (destroy)
+            {
+                PhotonNetwork.Destroy(this.gameObject);
+            }
             transform.Translate	(speed*Time.deltaTime*Vector3.forward);
             if (transform.position.x < -largeur || transform.position.x > largeur || transform.position.z < -hauteur ||
                 transform.position.z > hauteur)//lorsque le laser sort de l'arene on lui laisse un peut de marge puis on le supprime 
@@ -39,14 +42,10 @@ public class Laser : MonoBehaviourPunCallbacks
         }
         
     }
-    [PunRPC]
-    public void destruction()
+
+    public void Destroy()//va servir à detruire le laser 
     {
-        PhotonNetwork.Destroy(this.gameObject);
-    }
-    public void Destroy()//va servir à detruire le laser avec un message Rpc
-    {
-        photonView.RPC("destruction",RpcTarget.All);
+        destroy = true;
     }
 
 }

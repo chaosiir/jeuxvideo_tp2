@@ -28,7 +28,7 @@ public class Healthbar : MonoBehaviour
         target = _target;
     }
     // Update is called once per frame
-    public void Update_health()
+    public void Update()
     {
         //Debug.Log("Update healthbar called");
 
