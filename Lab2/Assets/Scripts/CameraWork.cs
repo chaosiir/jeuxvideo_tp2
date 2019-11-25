@@ -4,9 +4,9 @@ using System.Collections;
 
 
 
-/// <summary>
-/// Camera work. Follow a target
-/// </summary>
+/**
+ * va etre appliqué sur la camera lors du jeu pour suivre le joueur
+ */
 public class CameraWork : MonoBehaviour
 {
 
@@ -14,15 +14,14 @@ public class CameraWork : MonoBehaviour
     private float height = 200.0f;
 
 
-    private int xmax = 245;
+    private int xmax = 245;//limite de mouvement de la camera pour la bloqué sur les bords
     private int zmax = 180;
 
-    // cached transform of the target
-    Transform cameraTransform;
+   
+    Transform cameraTransform;//transform de la camera
 
 
-    // maintain a flag internally to reconnect if target is lost or camera is switched
-    bool isFollowing;
+    bool isFollowing;//indique si la camera doit suivre le joueur
 
 
     void Start()
@@ -32,62 +31,45 @@ public class CameraWork : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// MonoBehaviour method called after all Update functions have been called. This is useful to order script execution. For example a follow camera should always be implemented in LateUpdate because it tracks objects that might have moved inside Update.
-    /// </summary>
+    /**
+     * utilisation du Lateupdate pour changer la place de la camera apres avoir bougé les objets pour que le rendu soit plus stable
+     */
     void LateUpdate()
     {
-        // The transform target may not destroy on level load,
-        // so we need to cover corner cases where the Main Camera is different everytime we load a new scene, and reconnect when that happens
-        if (cameraTransform == null && isFollowing)
+        if (cameraTransform == null && isFollowing)//si le transform n'est pas initialisé 
         {
-            OnStartFollowing();
+            OnStartFollowing();//on l'initialise
         }
 
-        // only follow is explicitly declared
+        
         if (isFollowing)
         {
-            Apply();
+            Apply();//modification de la position de la camera pour suivre le joueur
         }
     }
 
-
-
-    /// <summary>
-    /// Raises the start following event.
-    /// Use this when you don't know at the time of editing what to follow, typically instances managed by the photon network.
-    /// </summary>
+    
     public void OnStartFollowing()
     {
         cameraTransform = Camera.main.transform;
         isFollowing = true;
-        // we don't smooth anything, we go straight to the right camera shot
         Apply();
     }
-
-
-    /// <summary>
-    /// Follow the target smoothly
-    /// </summary>
+    
+    /**
+     * suivi de la position du joueur par la camera
+     */
     void Apply()
     {
         Vector3 targetCenter = transform.position;
-        targetCenter.x = (targetCenter.x < -xmax) ? -xmax : targetCenter.x;
+        targetCenter.x = (targetCenter.x < -xmax) ? -xmax : targetCenter.x;//on applique les limites de mouvement de la camera
         targetCenter.x = (targetCenter.x > xmax) ? xmax : targetCenter.x;
         targetCenter.z = (targetCenter.z < -zmax) ? -zmax : targetCenter.z;
         targetCenter.z = (targetCenter.z > zmax) ? zmax : targetCenter.z;
 
 
-        float currentHeight = height;
-        cameraTransform.position = targetCenter;
-        cameraTransform.position = new Vector3(cameraTransform.position.x, currentHeight, cameraTransform.position.z);
-        // Always look at the target
-
-
-        //SetUpRotation(targetCenter);
+        float currentHeight = height;//recuperation de la hauteur de la camera qui ne change pas
+        cameraTransform.position = new Vector3(targetCenter.x, currentHeight, targetCenter.z);//modification de la position
+        
     }
-
-
-
-
 }

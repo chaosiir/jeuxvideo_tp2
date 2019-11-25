@@ -24,27 +24,18 @@ using Random = UnityEngine.Random;
 /// Connects and watch Photon Status, Instantiate Player
 /// Deals with quiting the room and the game
 /// Deals with level loading (outside the in room synchronization)
+/// Deal with enemy waves
 /// </summary>
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
-
-
-
-	static public GameManager Instance;
-
-
-	private GameObject instance;
-
 	[Tooltip("The prefab to use for representing the player")] [SerializeField]
 	private GameObject playerPrefab;
-
-	[SerializeField] private GameObject iaPrefab;
-
-	public GameObject pausepanel;
-	public GameObject gopanel;
-	public Text vague;
-	public bool paused = false;
-	public int nbvague = 0;
+	[SerializeField] private GameObject iaPrefab;//prefab des joueurs et des enemies
+	public GameObject pausepanel;//panel d'afficha de la pause
+	public GameObject gopanel;//panel d'affichage du gameOver
+	public Text vague;//affiche le numero de la vague
+	public bool paused = false;//indique si le jeu est en pose
+	public int nbvague = 0;//numero de la vague
 
 
 
@@ -53,8 +44,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 	/// </summary>
 	void Start()
 	{
-		Instance = this;
-
 		if (playerPrefab == null)
 		{
 			// #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
@@ -73,7 +62,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 				PhotonNetwork.Instantiate(playerPrefab.name,
 					new Vector3(Random.Range(-400, 400), 0, Random.Range(-300, 300)), Quaternion.identity);
-				// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
+				//si on a pas de joueur dans la partie on en creer un aleatoirement dans toute l'arene
 
 			}
 			else
@@ -89,20 +78,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	}
 
-
-	/// <summary>
-	/// MonoBehaviour method called on GameObject by Unity on every frame.
-	/// </summary>
+	
 	void Update()
 	{
-		pausepanel.SetActive(paused);
+		pausepanel.SetActive(paused);//affichage au non du panel de la pause et du numero de la vague
 		vague.text = "Wave " + nbvague;
-		// "back" button of phone equals "Escape". quit app if that's pressed
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
-			if (paused)
+			if (paused)//escape permet d'activer ou non la pause
 			{
-				photonView.RPC("Continue", RpcTarget.AllBuffered);
+				photonView.RPC("Continue", RpcTarget.AllBuffered);//on demande au gameManager de tout les joueur d'effectuer la fonction Continue ou Pause
 			}
 			else
 			{
@@ -110,7 +95,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 			}
 		}
 
-		if (PhotonNetwork.IsMasterClient)
+		if (PhotonNetwork.IsMasterClient)//le masterclient genere les vagues d'ennemis
 		{
 			if (GameObject.FindGameObjectsWithTag("enemy").Length == 0
 			) //quand il n'y a plus d'ennemis on passe à la vague suivante
@@ -123,15 +108,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 
 
-	public override void OnPlayerLeftRoom(Player otherPlayer)
+	public override void OnPlayerLeftRoom(Player otherPlayer)//lorque un joueur quitte la partie on recommence la vague
 	{
 		base.OnPlayerLeftRoom(otherPlayer);
 		if (PhotonNetwork.IsMasterClient)
 		{
 
 
-			nbvague--;
-			GameObject[] enemys = GameObject.FindGameObjectsWithTag("enemy");
+			nbvague--;//en decrementant nbvague
+			GameObject[] enemys = GameObject.FindGameObjectsWithTag("enemy");//et detruisant tout les enemies et lasers
 			foreach (GameObject enemy in enemys)
 			{
 				PhotonNetwork.Destroy(enemy);
@@ -143,10 +128,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 				PhotonNetwork.Destroy(laser);
 			}
 
-			GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+			GameObject[] players = GameObject.FindGameObjectsWithTag("Player");//on detruit aussi le joueur ayant quitté
 			foreach (GameObject player in players)
 			{
-				if (!player.GetPhotonView().IsOwnerActive)
+				if (!player.GetPhotonView().IsOwnerActive)//car celui ci n'est plus actif
 				{
 					PhotonNetwork.Destroy(player);
 				}

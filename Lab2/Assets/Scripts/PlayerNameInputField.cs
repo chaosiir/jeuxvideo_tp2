@@ -17,18 +17,9 @@ namespace Com.MyCompany.MyGame
     [RequireComponent(typeof(InputField))]
     public class PlayerNameInputField : MonoBehaviour
     {
-        #region Private Constants
-
-
         // Store the PlayerPref Key to avoid typos
         const string playerNamePrefKey = "PlayerName";
-
-
-        #endregion
-
-
-        #region MonoBehaviour CallBacks
-
+        
 
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
@@ -42,7 +33,7 @@ namespace Com.MyCompany.MyGame
             {
                 if (PlayerPrefs.HasKey(playerNamePrefKey))
                 {
-                    defaultName = PlayerPrefs.GetString(playerNamePrefKey);
+                    defaultName = PlayerPrefs.GetString(playerNamePrefKey);//on regarde si on a un nom par defaut dans les preferences
                     _inputField.text = defaultName;
                 }
             }
@@ -50,13 +41,6 @@ namespace Com.MyCompany.MyGame
 
             PhotonNetwork.NickName =  defaultName;
         }
-
-
-        #endregion
-
-
-        #region Public Methods
-
 
         /// <summary>
         /// Sets the name of the player, and save it in the PlayerPrefs for future sessions.
@@ -73,10 +57,8 @@ namespace Com.MyCompany.MyGame
             PhotonNetwork.NickName = value;
 
 
-            PlayerPrefs.SetString(playerNamePrefKey,value);
+            PlayerPrefs.SetString(playerNamePrefKey,value);//enregistrement du nom rentrer dans les preference pour les autres fois 
         }
 
-
-        #endregion
     }
 }

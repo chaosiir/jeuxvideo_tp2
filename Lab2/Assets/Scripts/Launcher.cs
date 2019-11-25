@@ -3,11 +3,27 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
 
-
+/**
+ *scrip servant à gerer le menu de l'ecran d'acceuil
+ * reutilisation d'une partie a du tutoriel de photon https://doc.photonengine.com/en-us/pun/v2/demos-and-tutorials/pun-basics-tutorial/intro
+ */
 public class Launcher : MonoBehaviourPunCallbacks
 {
+    
+    [Tooltip(
+        "The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
+    [SerializeField]
+    private byte maxPlayersPerRoom = 4;
+    
+    bool isConnecting;
 
+    [Tooltip("The Ui Panel to let the user enter name, connect and play")] [SerializeField]
+    private GameObject controlPanel;
 
+    [Tooltip("The UI Label to inform the user that the connection is in progress")] [SerializeField]
+    private GameObject progressLabel;
+    // This client's version number. Users are separated from each other by gameVersion (which allows you to make breaking changes).
+    string gameVersion = "1";
 
     public override void OnConnectedToMaster()
     {
@@ -37,7 +53,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
         PhotonNetwork.CreateRoom(null, new RoomOptions {MaxPlayers = maxPlayersPerRoom});
     }
-
+    //une fois qu'on a reussi a se connecter à une room
     public override void OnJoinedRoom()
     {
         Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
@@ -45,36 +61,11 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             Debug.Log("We load the Lobby ");
 
-            // #Critical
-            // Load the Room Level.
+            // si on est seul on charge la bonne scene
             PhotonNetwork.LoadLevel("Lobby");
         }
     }
-
-    [Tooltip(
-        "The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created")]
-    [SerializeField]
-    private byte maxPlayersPerRoom = 4;
-
-
-    bool isConnecting;
-
-    [Tooltip("The Ui Panel to let the user enter name, connect and play")] [SerializeField]
-    private GameObject controlPanel;
-
-    [Tooltip("The UI Label to inform the user that the connection is in progress")] [SerializeField]
-    private GameObject progressLabel;
-
-    /// <summary>
-    /// This client's version number. Users are separated from each other by gameVersion (which allows you to make breaking changes).
-    /// </summary>
-    string gameVersion = "1";
-
-
-
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
-    /// </summary>
+    
     void Awake()
     {
         // #Critical
@@ -82,10 +73,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
     }
 
-
-    /// <summary>
-    /// MonoBehaviour method called on GameObject by Unity during initialization phase.
-    /// </summary>
+    //on ne souhaite pas montrer le progressLabel (chargement) des le debut de l'application
     void Start()
     {
         progressLabel.SetActive(false);
@@ -116,12 +104,12 @@ public class Launcher : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
         }
     }
-
+    //fonction pour aller dans la scene de modification des setting (appel via bouton)
     public void GoToSettings()
     {
         SceneManager.LoadScene("Settings");
     }
-
+    //pour quitter l'application (appel via bouton)
     public void QuitApplication()
     {
         Application.Quit();
